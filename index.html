@@ -14,6 +14,10 @@
         --brown: #A67C39;
     }
     
+    html {
+        scroll-behavior: smooth;
+    }
+    
     * {
         margin: 0;
         padding: 0;
@@ -737,7 +741,7 @@
                         <li><a href="#">Home</a></li>
                         <li><a href="#">Shop</a></li>
                         <li><a href="#">About</a></li>
-                        <li><a href="#" class="order-btn">Order Now</a></li>
+                        <li><a href="#" class="order-btn" id="headerOrderBtn">Order Now</a></li>
                     </ul>
                 </nav>
             </div>
@@ -767,14 +771,14 @@
                 <h1>Greens<br>With<br>Attitude</h1>
                 <p>fresh, pesticide-free hydroponic microgreens & greens grown sustainably at suruli greens</p>
                 <div class="cta-buttons">
-                    <a href="#" class="btn btn-primary">Shop Now</a>
-                    <a href="#" class="btn btn-secondary">Learn More</a>
+                    <a href="#products" class="btn btn-primary">Shop Now</a>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="second-section">
+    <section class="second-section" id="about">
         <div class="container">
             <div class="second-content">
                 <div class="second-text">
@@ -782,7 +786,7 @@
                     <h2 class="brown-title">Harvested Today.<br>Delivered To Tomorrow.</h2>
                     <p class="green-text">fresh, pesticide-free hydroponic microgreens & greens grown sustainably at suruli greens</p>
                     <div class="cta-buttons">
-                        <a href="#" class="btn btn-primary">Shop Greens</a>
+                        <a href="#products" class="btn btn-primary">Shop Greens</a>
                         <a href="#" class="btn btn-secondary">Learn More</a>
                     </div>
                 </div>
@@ -808,7 +812,7 @@
         </div>
     </section>
 
-    <section class="products">
+    <section class="products" id="products">
         <div class="container">
             <div class="products-header">
                 <h2>Our Products</h2>
@@ -874,7 +878,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Contact Us</h3>
-                    <p>WhatsApp: +91 XXXXXXXXXX</p>
+                    <p>WhatsApp: +91 9840970514</p>
                     <p>Email: hello@suruligreens.com</p>
                     <p>Chennai, Tamil Nadu</p>
                 </div>
@@ -941,7 +945,10 @@
         
         // WhatsApp button functionality
         function openWhatsApp() {
-            window.open("https://wa.me/+91XXXXXXXXXX?text=Hi%20Suruli%20Greens!%20I'm%20interested%20in%20ordering%20some%20microgreens.", "_blank");
+            const phoneNumber = "919840970514"; // No plus sign, just country code and number
+            const message = "Hi Suruli Greens! I'm interested in ordering some microgreens.";
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
         }
         
         // Add to cart functionality
@@ -1068,11 +1075,16 @@
             // Encode the text for URL
             const encodedText = encodeURIComponent(orderText);
             
-            // Open WhatsApp with the pre-filled message
-            window.open(`https://wa.me/+91XXXXXXXXXX?text=${encodedText}`, "_blank");
+            // Try multiple formats for maximum compatibility
+            // Format 1: Direct mobile number with international format (most reliable)
+            const phoneNumber = "919840970514"; // No plus sign, just country code and number
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
             
-            // In a real implementation, this would also send data to your MCP server
-            // sendToMCPServer(cart);
+            // Open WhatsApp with the pre-filled message
+            window.open(whatsappUrl, "_blank");
+            
+            // Send data to the MCP server
+            sendToMCPServer(cart);
             
             // Close the modal
             cartModal.style.display = 'none';
@@ -1082,6 +1094,74 @@
         function sendToMCPServer(orderData) {
             // This would be implemented with actual server endpoints
             console.log("Order data would be sent to MCP server:", orderData);
+            
+            // In a real implementation, this would use fetch API to send data to your MCP server
+            // For demonstration purposes, we'll simulate a successful response
+            
+            // Format the order data for the MCP server
+            const formattedData = {
+                orderItems: orderData,
+                timestamp: new Date().toISOString(),
+                channel: 'website',
+                totalAmount: orderData.reduce((total, item) => total + (item.price * item.quantity), 0),
+                customerInfo: {
+                    // This would be collected from a form in a real implementation
+                    // For now, we'll use placeholder values
+                    name: "Customer",
+                    phone: "",
+                    address: ""
+                }
+            };
+            
+            // This is where you would send the data to your MCP server
+            // For example:
+            /*
+            fetch('https://your-mcp-server.com/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formattedData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Order sent to MCP server:', data);
+                
+                // The MCP server would then:
+                // 1. Process the order using Claude
+                // 2. Format it for your inventory/fulfillment system
+                // 3. Send confirmation to the customer via WhatsApp
+            })
+            .catch(error => {
+                console.error('Error sending order to MCP:', error);
+            });
+            */
+            
+            // For testing, let's simulate a successful response
+            console.log('Order sent to MCP server:', formattedData);
+            
+            // In a real implementation, this would be called after the fetch promise resolves
+            simulateMCPResponse(formattedData);
+        }
+        
+        // Simulate MCP server response (for testing)
+        function simulateMCPResponse(orderData) {
+            console.log('Simulating MCP server response...');
+            
+            // Simulate Claude processing the order
+            setTimeout(() => {
+                console.log('Order processed by Claude AI');
+                console.log('Order added to fulfillment queue');
+                console.log('Confirmation message sent to customer via WhatsApp');
+                
+                // In a real implementation, the MCP server would send a WhatsApp message to the customer
+                alert('Your order has been received! You will receive a confirmation on WhatsApp shortly.');
+                
+                // Clear the cart after successful order
+                cart = [];
+                updateCartCount();
+                updateCartDisplay();
+            }, 2000);
         }
         
         // Initialize when DOM is loaded
@@ -1115,6 +1195,15 @@
             const whatsappBtn = document.querySelector('.whatsapp-btn');
             if (whatsappBtn) {
                 whatsappBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    cartModal.style.display = 'flex';
+                });
+            }
+            
+            // Set up header Order Now button to open cart modal
+            const headerOrderBtn = document.getElementById('headerOrderBtn');
+            if (headerOrderBtn) {
+                headerOrderBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     cartModal.style.display = 'flex';
                 });

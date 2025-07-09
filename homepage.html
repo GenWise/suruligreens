@@ -878,7 +878,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Contact Us</h3>
-                    <p>WhatsApp: +91 XXXXXXXXXX</p>
+                    <p>WhatsApp: +91 9840970514</p>
                     <p>Email: hello@suruligreens.com</p>
                     <p>Chennai, Tamil Nadu</p>
                 </div>
@@ -945,7 +945,10 @@
         
         // WhatsApp button functionality
         function openWhatsApp() {
-            window.open("https://wa.me/+91XXXXXXXXXX?text=Hi%20Suruli%20Greens!%20I'm%20interested%20in%20ordering%20some%20microgreens.", "_blank");
+            const phoneNumber = "919840970514"; // No plus sign, just country code and number
+            const message = "Hi Suruli Greens! I'm interested in ordering some microgreens.";
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
         }
         
         // Add to cart functionality
@@ -1072,8 +1075,13 @@
             // Encode the text for URL
             const encodedText = encodeURIComponent(orderText);
             
+            // Try multiple formats for maximum compatibility
+            // Format 1: Direct mobile number with international format (most reliable)
+            const phoneNumber = "919840970514"; // No plus sign, just country code and number
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
+            
             // Open WhatsApp with the pre-filled message
-            window.open(`https://wa.me/919840970514?text=${encodedText}`, "_blank");
+            window.open(whatsappUrl, "_blank");
             
             // Send data to the MCP server
             sendToMCPServer(cart);
