@@ -34,10 +34,6 @@
         overflow-x: hidden;
     }
     
-    body.menu-open {
-        overflow: hidden;
-    }
-    
     .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -103,7 +99,7 @@
         background-color: #6A9248;
     }
     
-    /* Hero Section - Split Design */
+    /* Hero Section */
     .hero {
         height: 100vh;
         display: flex;
@@ -138,35 +134,6 @@
         padding: 0 60px;
         position: relative;
         overflow: hidden;
-    }
-    
-    /* Leaf illustrations */
-    .leaf {
-        position: absolute;
-        stroke: var(--light-green);
-        stroke-width: 1;
-        fill: none;
-        opacity: 0.3;
-    }
-    
-    .leaf-1 {
-        top: 10%;
-        right: 10%;
-        width: 120px;
-    }
-    
-    .leaf-2 {
-        bottom: 15%;
-        left: 5%;
-        width: 100px;
-        transform: rotate(45deg);
-    }
-    
-    .leaf-3 {
-        bottom: 30%;
-        right: 5%;
-        width: 150px;
-        transform: rotate(-15deg);
     }
     
     .hero-text {
@@ -224,97 +191,6 @@
     .btn-secondary:hover {
         background-color: #c8b992;
         transform: translateY(-3px);
-    }
-    
-    /* Second Section - Cream Background */
-    .second-section {
-        background-color: var(--cream);
-        padding: 100px 0;
-    }
-    
-    .second-content {
-        display: flex;
-        gap: 50px;
-    }
-    
-    .second-text {
-        flex: 1;
-    }
-    
-    .second-image {
-        flex: 1;
-        position: relative;
-    }
-    
-    .second-image img {
-        width: 100%;
-        height: auto;
-        border-radius: 10px;
-    }
-    
-    .green-title {
-        color: var(--light-green);
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 20px;
-        text-transform: uppercase;
-    }
-    
-    .brown-title {
-        color: var(--brown);
-        font-size: 60px;
-        font-weight: 800;
-        line-height: 1.1;
-        margin-bottom: 30px;
-        text-transform: uppercase;
-    }
-    
-    .green-text {
-        color: var(--light-green);
-        font-size: 18px;
-        margin-bottom: 40px;
-        max-width: 500px;
-        line-height: 1.6;
-    }
-    
-    .floating-leaves {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        pointer-events: none;
-    }
-    
-    .floating-leaf {
-        position: absolute;
-        width: 40px;
-        height: auto;
-        fill: var(--light-green);
-    }
-    
-    .leaf-float-1 {
-        top: 10%;
-        right: 20%;
-        transform: rotate(15deg);
-    }
-    
-    .leaf-float-2 {
-        top: 30%;
-        left: 10%;
-        transform: rotate(-10deg);
-    }
-    
-    .leaf-float-3 {
-        bottom: 20%;
-        right: 30%;
-        transform: rotate(25deg);
-    }
-    
-    .leaf-float-4 {
-        bottom: 40%;
-        left: 25%;
-        transform: rotate(-20deg);
     }
     
     /* Products Section */
@@ -399,60 +275,23 @@
         margin-bottom: 15px;
     }
     
-<<<<<<< HEAD
-    .add-to-cart-btn, .view-products-btn {
-=======
-    .add-to-cart-btn {
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
+    .view-products-btn {
         background-color: var(--light-green);
         color: white;
         border: none;
-        padding: 8px 15px;
+        padding: 10px 15px;
         border-radius: 5px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s;
-        font-family: 'Montserrat', sans-serif;
-    }
-    
-<<<<<<< HEAD
-    .add-to-cart-btn:hover, .view-products-btn:hover {
-=======
-    .add-to-cart-btn:hover {
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-        background-color: var(--dark-green);
-        transform: translateY(-2px);
-    }
-    
-<<<<<<< HEAD
-    .view-products-btn {
         width: 100%;
-        padding: 10px 15px;
-    }
-    
-=======
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-    /* Tagline Section */
-    .tagline {
-        background-color: var(--cream);
-        padding: 80px 0;
+        transition: background-color 0.3s;
         text-align: center;
+        display: block;
+        text-decoration: none;
     }
     
-    .tagline h2 {
-        color: var(--brown);
-        font-size: 60px;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 20px;
-        line-height: 1.1;
-    }
-    
-    .tagline p {
-        color: var(--brown);
-        font-size: 32px;
-        font-weight: 700;
-        text-transform: uppercase;
+    .view-products-btn:hover {
+        background-color: var(--dark-green);
     }
     
     /* Footer */
@@ -494,47 +333,6 @@
         border-top: 1px solid rgba(255,255,255,0.1);
     }
     
-    /* WhatsApp Button */
-    .whatsapp-btn {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background-color: #25D366;
-        color: white;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 30px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        z-index: 100;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .whatsapp-btn:hover {
-        transform: scale(1.1);
-    }
-    
-    .cart-count {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        background-color: var(--brown);
-        color: white;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid white;
-    }
-    
     /* Responsive */
     @media (max-width: 992px) {
         .hero {
@@ -550,42 +348,9 @@
         .hero-text h1 {
             font-size: 60px;
         }
-        
-        .second-content {
-            flex-direction: column;
-        }
-        
-        .brown-title {
-            font-size: 48px;
-        }
-        
-        .tagline h2 {
-            font-size: 48px;
-        }
-        
-        .tagline p {
-            font-size: 24px;
-        }
     }
     
-    /* Mobile Improvements */
     @media (max-width: 768px) {
-        .header-content {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        nav ul {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        nav ul li {
-            margin: 5px 10px;
-        }
-        
         .hero-text h1 {
             font-size: 48px;
         }
@@ -604,497 +369,12 @@
             width: 100%;
             text-align: center;
         }
-        
-        .brown-title {
-            font-size: 36px;
-        }
-        
-        .tagline h2 {
-            font-size: 36px;
-        }
-        
-        .tagline p {
-            font-size: 20px;
-        }
-        
-        /* Cart Modal Mobile Improvements */
-        .cart-modal-content {
-            width: 95%;
-            max-height: 90vh;
-            border-radius: 15px;
-        }
-        
-        .cart-modal-header h3 {
-            font-size: 20px;
-        }
-        
-        .cart-items {
-            max-height: 40vh;
-        }
-        
-        .checkout-btn, .phone-btn, .print-btn {
-            padding: 15px 0;
-            width: 100%;
-            margin: 5px 0;
-            font-size: 16px;
-        }
-        
-        .alternative-checkout {
-            padding: 15px;
-        }
-        
-        /* WhatsApp button position */
-        .whatsapp-btn {
-            bottom: 20px;
-            right: 20px;
-        }
     }
     
-    /* Small Phones */
     @media (max-width: 375px) {
         .hero-text h1 {
             font-size: 40px;
         }
-        
-        .product-info h3 {
-            font-size: 18px;
-        }
-        
-        .add-to-cart-btn {
-            padding: 6px 12px;
-            font-size: 14px;
-        }
-    }
-
-    /* Cart Modal */
-    .cart-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 1001;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .cart-modal-content {
-        background-color: var(--cream);
-        border-radius: 10px;
-        width: 90%;
-        max-width: 500px;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-    }
-    
-    .cart-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
-    
-    .cart-modal-header h3 {
-        color: var(--dark-green);
-        margin: 0;
-        font-size: 24px;
-    }
-    
-    .close-cart {
-        font-size: 28px;
-        font-weight: bold;
-        color: #777;
-        cursor: pointer;
-    }
-    
-    .close-cart:hover {
-        color: var(--dark-green);
-    }
-    
-    .cart-items {
-        padding: 20px;
-        max-height: 50vh;
-        overflow-y: auto;
-    }
-    
-    .empty-cart-message {
-        text-align: center;
-        padding: 20px;
-        color: #777;
-        font-style: italic;
-    }
-    
-    .cart-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .cart-item-details {
-        flex: 1;
-    }
-    
-    .cart-item-name {
-        font-weight: 600;
-        color: var(--dark-green);
-    }
-    
-    .cart-item-price {
-        color: var(--brown);
-        font-size: 14px;
-    }
-    
-    .cart-item-quantity {
-        display: flex;
-        align-items: center;
-        margin-left: 15px;
-    }
-    
-    .quantity-btn {
-        width: 25px;
-        height: 25px;
-        background: var(--light-green);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .quantity-value {
-        margin: 0 10px;
-        font-weight: 600;
-    }
-    
-    .cart-total {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-top: 1px solid rgba(0,0,0,0.1);
-        font-weight: 700;
-    }
-    
-    .total-amount {
-        color: var(--brown);
-        font-size: 20px;
-    }
-    
-    .checkout-btn {
-        display: block;
-        width: calc(100% - 40px);
-        margin: 0 20px 20px;
-        padding: 15px;
-        background-color: #25D366;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .checkout-btn:hover {
-        background-color: #1da851;
-    }
-
-    .alternative-checkout {
-        text-align: center;
-        padding: 20px;
-        border-top: 1px solid rgba(0,0,0,0.05);
-        margin-top: 20px;
-    }
-
-    .alternative-checkout p {
-        color: #555;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-
-    .phone-btn {
-        display: inline-block;
-        background-color: var(--light-green);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 30px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: background-color 0.3s;
-        margin-right: 10px;
-    }
-    
-    .phone-btn:hover {
-        background-color: #6A9248;
-    }
-    
-    .print-btn {
-        display: inline-block;
-        background-color: var(--brown);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 30px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    
-    .print-btn:hover {
-        background-color: #8a6530;
-    }
-
-    .small-text {
-        color: #777;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-
-    /* Mobile Menu */
-    .mobile-menu-toggle {
-        display: none;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 30px;
-        height: 21px;
-        cursor: pointer;
-        z-index: 1001;
-    }
-    
-    .mobile-menu-toggle span {
-        display: block;
-        height: 3px;
-        width: 100%;
-        background-color: var(--cream);
-        border-radius: 3px;
-        transition: all 0.3s ease;
-    }
-    
-    @media (max-width: 768px) {
-        .mobile-menu-toggle {
-            display: flex;
-            margin-left: auto;
-        }
-        
-        nav ul {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--dark-green);
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-        
-        nav ul.active {
-            transform: translateY(0);
-        }
-        
-        nav ul li {
-            margin: 15px 0;
-        }
-        
-        .header-content {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-    }
-
-<<<<<<< HEAD
-    /* Product Modal */
-    .product-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 1001;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .product-modal-content {
-        background-color: var(--cream);
-        border-radius: 10px;
-        width: 90%;
-        max-width: 800px;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-    }
-    
-    .product-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
-    
-    .product-modal-header h3 {
-        color: var(--dark-green);
-        margin: 0;
-        font-size: 24px;
-    }
-    
-    .close-product-modal {
-        font-size: 28px;
-        font-weight: bold;
-        color: #777;
-        cursor: pointer;
-    }
-    
-    .close-product-modal:hover {
-        color: var(--dark-green);
-    }
-    
-    .product-modal-body {
-        padding: 20px;
-    }
-    
-    .product-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-    }
-    
-    .product-item {
-        background-color: white;
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .product-item h4 {
-        color: var(--dark-green);
-        margin: 0 0 10px 0;
-        font-size: 18px;
-    }
-    
-    .product-item-description {
-        color: #555;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-    
-    .product-item-price {
-        color: var(--brown);
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
-    
-=======
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-    /* Notification */
-    .notification {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-        width: 90%;
-        max-width: 400px;
-        z-index: 2000;
-        display: none;
-        overflow: hidden;
-    }
-    
-    .notification.show {
-        display: block;
-        animation: fadeIn 0.3s;
-    }
-    
-    .notification-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .notification-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #333;
-    }
-    
-    .notification-close {
-        font-size: 24px;
-        color: #999;
-        cursor: pointer;
-    }
-    
-    .notification-body {
-        padding: 20px 15px;
-    }
-    
-    .notification-message {
-        margin-bottom: 15px;
-    }
-    
-    .notification-checkbox {
-        display: flex;
-        align-items: center;
-        margin: 15px 0;
-    }
-    
-    .notification-checkbox input {
-        margin-right: 10px;
-    }
-    
-    .notification-actions {
-        display: flex;
-        justify-content: flex-end;
-    }
-    
-    .notification-btn {
-        background-color: #1a73e8;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 8px 16px;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    
-    .notification-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 1999;
-        display: none;
-    }
-    
-    .notification-overlay.show {
-        display: block;
-        animation: fadeIn 0.3s;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
     }
 </style>
 </head>
@@ -1104,16 +384,11 @@
             <div class="header-content">
                 <div class="logo">Suruli Greens</div>
                 <nav>
-                    <div class="mobile-menu-toggle" id="mobileMenuToggle">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <ul id="navMenu">
+                    <ul>
                         <li><a href="#">Home</a></li>
-                        <li><a href="#">Shop</a></li>
+                        <li><a href="products.html">Shop</a></li>
                         <li><a href="#">About</a></li>
-                        <li><a href="#" class="order-btn" id="headerOrderBtn">Order Now</a></li>
+                        <li><a href="#" class="order-btn">Order Now</a></li>
                     </ul>
                 </nav>
             </div>
@@ -1125,60 +400,12 @@
             <!-- Image is set in CSS as background -->
         </div>
         <div class="hero-content">
-            <!-- Decorative leaves -->
-            <svg class="leaf leaf-1" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10,25 Q30,5 50,25 T90,25" />
-                <path d="M10,25 Q30,45 50,25 T90,25" />
-            </svg>
-            <svg class="leaf leaf-2" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10,25 Q30,5 50,25 T90,25" />
-                <path d="M10,25 Q30,45 50,25 T90,25" />
-            </svg>
-            <svg class="leaf leaf-3" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10,25 Q30,5 50,25 T90,25" />
-                <path d="M10,25 Q30,45 50,25 T90,25" />
-            </svg>
-            
             <div class="hero-text">
                 <h1>Greens<br>With<br>Attitude</h1>
                 <p>fresh, pesticide-free hydroponic microgreens & greens grown sustainably at suruli greens</p>
                 <div class="cta-buttons">
                     <a href="#products" class="btn btn-primary">Shop Now</a>
-                    <a href="#about" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="second-section" id="about">
-        <div class="container">
-            <div class="second-content">
-                <div class="second-text">
-                    <h3 class="green-title">Suruli Greens</h3>
-                    <h2 class="brown-title">Harvested Today.<br>Delivered To Tomorrow.</h2>
-                    <p class="green-text">fresh, pesticide-free hydroponic microgreens & greens grown sustainably at suruli greens</p>
-                    <div class="cta-buttons">
-                        <a href="#products" class="btn btn-primary">Shop Greens</a>
-                        <a href="#" class="btn btn-secondary">Learn More</a>
-                    </div>
-                </div>
-                <div class="second-image">
-                    <img src="https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWljcm9ncmVlbnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Microgreens in trays">
-                    <!-- Floating leaves decoration -->
-                    <div class="floating-leaves">
-                        <svg class="floating-leaf leaf-float-1" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M25,5 Q40,20 25,45 Q10,20 25,5" />
-                        </svg>
-                        <svg class="floating-leaf leaf-float-2" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M25,5 Q40,20 25,45 Q10,20 25,5" />
-                        </svg>
-                        <svg class="floating-leaf leaf-float-3" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M25,5 Q40,20 25,45 Q10,20 25,5" />
-                        </svg>
-                        <svg class="floating-leaf leaf-float-4" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M25,5 Q40,20 25,45 Q10,20 25,5" />
-                        </svg>
-                    </div>
+                    <a href="#" class="btn btn-secondary">Learn More</a>
                 </div>
             </div>
         </div>
@@ -1190,25 +417,6 @@
                 <h2>Our Products</h2>
             </div>
             <div class="products-grid">
-<<<<<<< HEAD
-                <!-- Product categories will be populated here from JavaScript -->
-            </div>
-        </div>
-    </section>
-    
-    <!-- Product Details Modal -->
-    <div class="product-modal" id="productModal">
-        <div class="product-modal-content">
-            <div class="product-modal-header">
-                <h3 id="productCategoryTitle">Category Products</h3>
-                <span class="close-product-modal">&times;</span>
-            </div>
-            <div class="product-modal-body">
-                <!-- Individual products will be populated here -->
-            </div>
-        </div>
-    </div>
-=======
                 <div class="product-card">
                     <div class="product-image">
                         <img src="https://images.unsplash.com/photo-1515283736202-cae4a8e5a0d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWljcm9ncmVlbnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Microgreens">
@@ -1217,7 +425,7 @@
                         <h3>Fresh Microgreens</h3>
                         <p>Nutrient-packed microgreens, harvested daily</p>
                         <div class="product-price">From ₹120/pack</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <a href="products.html#microgreens" class="view-products-btn">View Products</a>
                     </div>
                 </div>
                 <div class="product-card">
@@ -1228,7 +436,7 @@
                         <h3>Hydroponic Greens</h3>
                         <p>Clean, pesticide-free leafy greens</p>
                         <div class="product-price">From ₹80/pack</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <a href="products.html#hydroponics" class="view-products-btn">View Products</a>
                     </div>
                 </div>
                 <div class="product-card">
@@ -1239,7 +447,7 @@
                         <h3>Fresh Herbs</h3>
                         <p>Aromatic herbs for your cooking needs</p>
                         <div class="product-price">From ₹100/pack</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <a href="products.html#herbs" class="view-products-btn">View Products</a>
                     </div>
                 </div>
                 <div class="product-card">
@@ -1250,18 +458,10 @@
                         <h3>Weekly Box</h3>
                         <p>Curated selection delivered weekly</p>
                         <div class="product-price">From ₹450/week</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <a href="products.html#weekly" class="view-products-btn">View Products</a>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-
-    <section class="tagline">
-        <div class="container">
-            <h2>We Grow It Like<br>Nobody Else.</h2>
-            <p>Hydroponic. Zero BS.</p>
         </div>
     </section>
 
@@ -1276,10 +476,10 @@
                 </div>
                 <div class="footer-section">
                     <h3>Shop</h3>
-                    <a href="#">Microgreens</a>
-                    <a href="#">Leafy Greens</a>
-                    <a href="#">Herb Packs</a>
-                    <a href="#">Subscriptions</a>
+                    <a href="products.html#microgreens">Microgreens</a>
+                    <a href="products.html#hydroponics">Leafy Greens</a>
+                    <a href="products.html#herbs">Herb Packs</a>
+                    <a href="products.html#weekly">Subscriptions</a>
                 </div>
                 <div class="footer-section">
                     <h3>About</h3>
@@ -1300,630 +500,5 @@
             </div>
         </div>
     </footer>
-
-    <!-- WhatsApp Button -->
-    <div class="whatsapp-btn" onclick="sendCartToWhatsApp()">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.4054 3.5875C18.1607 1.3425 15.1714 0 11.9946 0C5.4375 0 0.09375 5.34375 0.09375 11.9062C0.09375 14.0062 0.6875 16.0312 1.79464 17.7857L0 24L6.34821 22.2321C8.03571 23.25 9.98036 23.7857 11.9893 23.7857H11.9946C18.5464 23.7857 24 18.4419 24 11.8795C24 8.70804 22.65 5.83393 20.4054 3.5875ZM11.9946 21.7634C10.2321 21.7634 8.50714 21.2491 7.03125 20.2902L6.67232 20.0759L2.89286 21.1071L3.9375 17.4107L3.70179 17.0357C2.65179 15.5089 2.10268 13.7304 2.10268 11.9062C2.10268 6.45536 6.54911 2.01786 12 2.01786C14.6518 2.01786 17.1321 3.12054 19.0179 5.01161C20.9036 6.90268 22.0179 9.38304 22.0125 11.8795C22.0125 17.3357 17.4402 21.7634 11.9946 21.7634ZM17.4107 14.4107C17.1161 14.2634 15.6589 13.5482 15.3857 13.4491C15.1125 13.35 14.9143 13.3018 14.7161 13.5964C14.5179 13.8911 13.9554 14.5554 13.7786 14.7536C13.6071 14.9518 13.4304 14.9732 13.1357 14.8259C11.3839 13.9554 10.2375 13.275 9.08571 11.2848C8.8125 10.8214 9.42321 10.8589 9.99107 9.72321C10.0902 9.525 10.0421 9.35357 9.96964 9.20625C9.89732 9.05893 9.30268 7.60179 9.05357 7.0125C8.81071 6.4393 8.56161 6.52232 8.38036 6.51161C8.20893 6.50089 8.01071 6.50089 7.8125 6.50089C7.61429 6.50089 7.29107 6.57321 7.01786 6.86786C6.74464 7.1625 5.98125 7.87768 5.98125 9.33482C5.98125 10.7921 7.04464 12.2009 7.19196 12.3991C7.33929 12.5973 9.29464 15.5839 12.2679 16.8589C14.1107 17.6732 14.8446 17.7375 15.7714 17.5929C16.3339 17.5018 17.5071 16.8696 17.7562 16.1786C18.0054 15.4875 18.0054 14.8982 17.9331 14.7536C17.8661 14.5982 17.7054 14.5125 17.4107 14.4107Z" fill="white"/>
-        </svg>
-        <div class="cart-count" style="display: none;">0</div>
-    </div>
-    
-    <!-- Cart Modal -->
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-modal-content">
-            <div class="cart-modal-header">
-                <h3>Your Cart</h3>
-                <span class="close-cart">&times;</span>
-            </div>
-            <div class="cart-items">
-                <!-- Cart items will be populated here -->
-                <div class="empty-cart-message">Your cart is empty</div>
-            </div>
-            <div class="cart-total">
-                <div class="total-text">Total:</div>
-                <div class="total-amount">₹0</div>
-            </div>
-            <button class="checkout-btn">Order via WhatsApp</button>
-            <div class="alternative-checkout">
-                <p>Not comfortable with WhatsApp?</p>
-                <a href="tel:+919840970514" class="phone-btn">Call us to order</a>
-<<<<<<< HEAD
-=======
-                <button class="print-btn" onclick="printOrder()">Print Order</button>
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-                <p class="small-text">Or simply note down your items and call +91 9840970514</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <div class="notification-header">
-            <span class="notification-title">Order Confirmation</span>
-            <span class="notification-close">&times;</span>
-        </div>
-        <div class="notification-body">
-            <p class="notification-message">Your order has been received! You will receive a confirmation on WhatsApp shortly.</p>
-            <div class="notification-checkbox">
-                <input type="checkbox" id="dontShowAgain">
-                <label for="dontShowAgain">Don't show this again</label>
-            </div>
-            <div class="notification-actions">
-                <button class="notification-btn">OK</button>
-            </div>
-        </div>
-    </div>
-    <div class="notification-overlay" id="notificationOverlay"></div>
-
-<<<<<<< HEAD
-    <!-- Include the products data file -->
-    <script src="products.js"></script>
-    
-=======
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-    <script>
-        // Shopping cart functionality
-        let cart = [];
-        const cartModal = document.getElementById('cartModal');
-        const closeCart = document.querySelector('.close-cart');
-        const checkoutBtn = document.querySelector('.checkout-btn');
-        
-<<<<<<< HEAD
-        // Product modal functionality
-        const productModal = document.getElementById('productModal');
-        const closeProductModal = document.querySelector('.close-product-modal');
-        const productCategoryTitle = document.getElementById('productCategoryTitle');
-        const productModalBody = document.querySelector('.product-modal-body');
-        
-=======
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-        // Notification functionality
-        const notification = document.getElementById('notification');
-        const notificationOverlay = document.getElementById('notificationOverlay');
-        const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
-        const notificationClose = document.querySelector('.notification-close');
-        const notificationBtn = document.querySelector('.notification-btn');
-
-        function showNotification(message, type = 'info') {
-            notification.textContent = message;
-            notification.className = 'notification'; // Clear previous classes
-            notification.classList.add('show', type);
-            notificationOverlay.classList.add('show');
-
-            if (dontShowAgainCheckbox.checked) {
-                localStorage.setItem('showNotification', 'false');
-            }
-
-            setTimeout(() => {
-                notification.classList.remove('show', type);
-                notificationOverlay.classList.remove('show');
-            }, 3000); // Hide after 3 seconds
-        }
-
-        function closeNotification() {
-            notification.classList.remove('show');
-            notificationOverlay.classList.remove('show');
-        }
-
-        // WhatsApp button functionality
-        function openWhatsApp() {
-            const phoneNumber = "919840970514"; // No plus sign, just country code and number
-            const message = "Hi Suruli Greens! I'm interested in ordering some microgreens.";
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
-        }
-        
-        // Add to cart functionality
-        function addToCart(productName, price, quantity = 1) {
-            // Check if product already exists in cart
-            const existingProduct = cart.find(item => item.name === productName);
-            
-            if (existingProduct) {
-                existingProduct.quantity += quantity;
-            } else {
-                cart.push({
-                    name: productName,
-                    price: price,
-                    quantity: quantity
-                });
-            }
-            
-            updateCartCount();
-            updateCartDisplay();
-            console.log("Cart updated:", cart);
-        }
-        
-        // Update cart count badge
-        function updateCartCount() {
-            const cartCountElement = document.querySelector('.cart-count');
-            if (cartCountElement) {
-                const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-                cartCountElement.textContent = totalItems;
-                
-                // Show/hide count based on items
-                cartCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
-                
-                // Show/hide empty cart message
-                const emptyCartMessage = document.querySelector('.empty-cart-message');
-                if (emptyCartMessage) {
-                    emptyCartMessage.style.display = totalItems > 0 ? 'none' : 'block';
-                }
-            }
-        }
-        
-        // Update cart items in modal
-        function updateCartDisplay() {
-            const cartItemsContainer = document.querySelector('.cart-items');
-            const totalAmountElement = document.querySelector('.total-amount');
-            
-            if (!cartItemsContainer) return;
-            
-            // Clear current items (except empty message)
-            const currentItems = cartItemsContainer.querySelectorAll('.cart-item');
-            currentItems.forEach(item => item.remove());
-            
-            // Add each cart item
-            let totalAmount = 0;
-            
-            cart.forEach((item, index) => {
-                const itemTotal = item.price * item.quantity;
-                totalAmount += itemTotal;
-                
-                const cartItemElement = document.createElement('div');
-                cartItemElement.classList.add('cart-item');
-                cartItemElement.innerHTML = `
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">₹${item.price} × ${item.quantity} = ₹${itemTotal}</div>
-                    </div>
-                    <div class="cart-item-quantity">
-                        <button class="quantity-btn decrease" data-index="${index}">-</button>
-                        <span class="quantity-value">${item.quantity}</span>
-                        <button class="quantity-btn increase" data-index="${index}">+</button>
-                    </div>
-                `;
-                
-                cartItemsContainer.insertBefore(cartItemElement, document.querySelector('.empty-cart-message'));
-                
-                // Add event listeners to quantity buttons
-                cartItemElement.querySelector('.decrease').addEventListener('click', function() {
-                    updateItemQuantity(index, -1);
-                });
-                
-                cartItemElement.querySelector('.increase').addEventListener('click', function() {
-                    updateItemQuantity(index, 1);
-                });
-            });
-            
-            // Update total
-            if (totalAmountElement) {
-                totalAmountElement.textContent = `₹${totalAmount}`;
-            }
-        }
-        
-        // Update item quantity
-        function updateItemQuantity(index, change) {
-            if (index >= 0 && index < cart.length) {
-                cart[index].quantity += change;
-                
-                // Remove item if quantity is 0
-                if (cart[index].quantity <= 0) {
-                    cart.splice(index, 1);
-                }
-                
-                updateCartCount();
-                updateCartDisplay();
-            }
-        }
-        
-        // Send cart to WhatsApp
-        function sendCartToWhatsApp() {
-            if (cart.length === 0) {
-                alert("Your cart is empty. Please add some items first.");
-                return;
-            }
-            
-            // Format the order for WhatsApp
-            let orderText = "Hi Suruli Greens! I'd like to place an order for:\n\n";
-            
-            cart.forEach(item => {
-                orderText += `${item.quantity}x ${item.name} - ₹${item.price * item.quantity}\n`;
-            });
-            
-            const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-            orderText += `\nTotal: ₹${totalAmount}`;
-            orderText += "\n\nPlease confirm my order. Thanks!";
-            
-            // Encode the text for URL
-            const encodedText = encodeURIComponent(orderText);
-            
-            // Try multiple formats for maximum compatibility
-            // Format 1: Direct mobile number with international format (most reliable)
-            const phoneNumber = "919840970514"; // No plus sign, just country code and number
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
-            
-            // Open WhatsApp with the pre-filled message
-            window.open(whatsappUrl, "_blank");
-            
-            // Send data to the MCP server
-            sendToMCPServer(cart);
-            
-            // Close the modal
-            cartModal.style.display = 'none';
-            showNotification('Your order has been received! You will receive a confirmation on WhatsApp shortly.');
-        }
-        
-        // Example function to send data to MCP server
-        function sendToMCPServer(orderData) {
-            // This would be implemented with actual server endpoints
-            console.log("Order data would be sent to MCP server:", orderData);
-            
-            // In a real implementation, this would use fetch API to send data to your MCP server
-            // For demonstration purposes, we'll simulate a successful response
-            
-            // Format the order data for the MCP server
-            const formattedData = {
-                orderItems: orderData,
-                timestamp: new Date().toISOString(),
-                channel: 'website',
-                totalAmount: orderData.reduce((total, item) => total + (item.price * item.quantity), 0),
-                customerInfo: {
-                    // This would be collected from a form in a real implementation
-                    // For now, we'll use placeholder values
-                    name: "Customer",
-                    phone: "",
-                    address: ""
-                }
-            };
-            
-            // This is where you would send the data to your MCP server
-            // For example:
-            /*
-            fetch('https://your-mcp-server.com/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formattedData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Order sent to MCP server:', data);
-                
-                // The MCP server would then:
-                // 1. Process the order using Claude
-                // 2. Format it for your inventory/fulfillment system
-                // 3. Send confirmation to the customer via WhatsApp
-            })
-            .catch(error => {
-                console.error('Error sending order to MCP:', error);
-            });
-            */
-            
-            // For testing, let's simulate a successful response
-            console.log('Order sent to MCP server:', formattedData);
-            
-            // In a real implementation, this would be called after the fetch promise resolves
-            simulateMCPResponse(formattedData);
-        }
-        
-        // Simulate MCP server response (for testing)
-        function simulateMCPResponse(orderData) {
-            console.log('Simulating MCP server response...');
-            
-            // Simulate Claude processing the order
-            setTimeout(() => {
-                console.log('Order processed by Claude AI');
-                console.log('Order added to fulfillment queue');
-                console.log('Confirmation message sent to customer via WhatsApp');
-                
-                // In a real implementation, the MCP server would send a WhatsApp message to the customer
-                alert('Your order has been received! You will receive a confirmation on WhatsApp shortly.');
-                
-                // Clear the cart after successful order
-                cart = [];
-                updateCartCount();
-                updateCartDisplay();
-            }, 2000);
-        }
-        
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
-            // Populate product categories
-            populateProductCategories();
-            
-            // Set up product category click events
-            setupProductCategoryEvents();
-            
-            // Set up product modal events
-            setupProductModalEvents();
-=======
-            // Add click events to Add to Cart buttons
-            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-            
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent card click
-                    const card = this.closest('.product-card');
-                    const productName = card.querySelector('h3').textContent;
-                    const priceText = card.querySelector('.product-price').textContent;
-                    // Extract numeric price from text like "From ₹120/pack"
-                    const price = parseInt(priceText.match(/₹(\d+)/)[1]);
-                    
-                    addToCart(productName, price);
-                    
-                    // Show confirmation
-                    this.textContent = "Added!";
-                    this.style.backgroundColor = "#4a7c59";
-                    
-                    setTimeout(() => {
-                        this.textContent = "Add to Cart";
-                        this.style.backgroundColor = "";
-                    }, 1000);
-                });
-            });
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-            
-            // Set up WhatsApp button to open cart modal
-            const whatsappBtn = document.querySelector('.whatsapp-btn');
-            if (whatsappBtn) {
-                whatsappBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    cartModal.style.display = 'flex';
-                });
-            }
-            
-            // Set up header Order Now button to open cart modal
-            const headerOrderBtn = document.getElementById('headerOrderBtn');
-            if (headerOrderBtn) {
-                headerOrderBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    cartModal.style.display = 'flex';
-                });
-            }
-            
-            // Close cart modal when clicking X
-            if (closeCart) {
-                closeCart.addEventListener('click', function() {
-                    cartModal.style.display = 'none';
-                });
-            }
-            
-            // Close cart modal when clicking outside
-            window.addEventListener('click', function(e) {
-                if (e.target === cartModal) {
-                    cartModal.style.display = 'none';
-                }
-            });
-            
-            // Set up checkout button
-            if (checkoutBtn) {
-                checkoutBtn.addEventListener('click', sendCartToWhatsApp);
-            }
-            
-            // Initialize cart count
-            updateCartCount();
-            
-            // Mobile menu toggle
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const navMenu = document.getElementById('navMenu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navMenu.classList.toggle('active');
-                    document.body.classList.toggle('menu-open');
-                });
-                
-                // Close menu when clicking a link
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        document.body.classList.remove('menu-open');
-                    });
-                });
-            }
-
-            // Notification close functionality
-            if (notificationClose) {
-                notificationClose.addEventListener('click', closeNotification);
-            }
-
-            // Notification overlay click to close
-            if (notificationOverlay) {
-                notificationOverlay.addEventListener('click', closeNotification);
-            }
-
-            // Initial check for notification preference
-            const showNotificationPreference = localStorage.getItem('showNotification');
-            if (showNotificationPreference === 'false') {
-                notification.style.display = 'none';
-                notificationOverlay.style.display = 'none';
-            }
-        });
-
-<<<<<<< HEAD
-        // Populate product categories in the grid
-        function populateProductCategories() {
-            const productsGrid = document.querySelector('.products-grid');
-            if (!productsGrid) return;
-            
-            // Clear existing content
-            productsGrid.innerHTML = '';
-            
-            // Add each product category
-            for (const categoryName in productData) {
-                const category = productData[categoryName];
-                
-                const categoryCard = document.createElement('div');
-                categoryCard.classList.add('product-card');
-                categoryCard.dataset.category = categoryName;
-                
-                categoryCard.innerHTML = `
-                    <div class="product-image">
-                        <img src="${category.image}" alt="${categoryName}">
-                    </div>
-                    <div class="product-info">
-                        <h3>${categoryName}</h3>
-                        <p>${category.description}</p>
-                        <div class="product-price">From ₹${getLowestPrice(category.products)}</div>
-                        <button class="view-products-btn">View Products</button>
-                    </div>
-                `;
-                
-                productsGrid.appendChild(categoryCard);
-            }
-        }
-        
-        // Get the lowest price from a category's products
-        function getLowestPrice(products) {
-            if (!products || products.length === 0) return 0;
-            return Math.min(...products.map(product => product.price));
-        }
-        
-        // Set up click events for product categories
-        function setupProductCategoryEvents() {
-            const productCards = document.querySelectorAll('.product-card');
-            
-            productCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const categoryName = this.dataset.category;
-                    showProductsModal(categoryName);
-                });
-                
-                // Also set up the View Products button
-                const viewBtn = card.querySelector('.view-products-btn');
-                if (viewBtn) {
-                    viewBtn.addEventListener('click', function(e) {
-                        e.stopPropagation(); // Prevent card click
-                        const categoryName = card.dataset.category;
-                        showProductsModal(categoryName);
-                    });
-                }
-            });
-        }
-        
-        // Show the products modal for a specific category
-        function showProductsModal(categoryName) {
-            const category = productData[categoryName];
-            if (!category) return;
-            
-            // Set the modal title
-            productCategoryTitle.textContent = categoryName;
-            
-            // Clear and populate the modal body
-            productModalBody.innerHTML = '';
-            
-            // Create product list container
-            const productList = document.createElement('div');
-            productList.classList.add('product-list');
-            
-            // Add each product
-            category.products.forEach(product => {
-                const productItem = document.createElement('div');
-                productItem.classList.add('product-item');
-                
-                productItem.innerHTML = `
-                    <h4>${product.name}</h4>
-                    <div class="product-item-description">${product.description}</div>
-                    <div class="product-item-price">₹${product.price}</div>
-                    <button class="add-to-cart-btn" data-name="${product.name}" data-price="${product.price}">Add to Cart</button>
-                `;
-                
-                productList.appendChild(productItem);
-            });
-            
-            productModalBody.appendChild(productList);
-            
-            // Add click events to the Add to Cart buttons
-            const addToCartButtons = productModalBody.querySelectorAll('.add-to-cart-btn');
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productName = this.dataset.name;
-                    const price = parseInt(this.dataset.price);
-                    
-                    addToCart(productName, price);
-                    
-                    // Show confirmation
-                    this.textContent = "Added!";
-                    this.style.backgroundColor = "#4a7c59";
-                    
-                    setTimeout(() => {
-                        this.textContent = "Add to Cart";
-                        this.style.backgroundColor = "";
-                    }, 1000);
-                });
-            });
-            
-            // Show the modal
-            productModal.style.display = 'flex';
-        }
-        
-        // Set up product modal events
-        function setupProductModalEvents() {
-            // Close modal when clicking X
-            if (closeProductModal) {
-                closeProductModal.addEventListener('click', function() {
-                    productModal.style.display = 'none';
-                });
-            }
-            
-            // Close modal when clicking outside
-            window.addEventListener('click', function(e) {
-                if (e.target === productModal) {
-                    productModal.style.display = 'none';
-                }
-            });
-=======
-        // Print Order Function
-        function printOrder() {
-            if (cart.length === 0) {
-                alert("Your cart is empty. Please add some items first.");
-                return;
-            }
-            
-            // Calculate total
-            let totalAmount = 0;
-            for (let i = 0; i < cart.length; i++) {
-                totalAmount += cart[i].price * cart[i].quantity;
-            }
-            
-            // Generate a simple reference code
-            let refCode = 'REF-' + Math.floor(Math.random() * 10000);
-            
-            // Create a simple printable version
-            let printWindow = window.open('', '_blank');
-            if (printWindow) {
-                printWindow.document.write('<html><head><title>Your Order</title>');
-                printWindow.document.write('<style>body{font-family:Arial;padding:20px}</style>');
-                printWindow.document.write('</head><body>');
-                printWindow.document.write('<h1>Your Suruli Greens Order</h1>');
-                printWindow.document.write('<p>Date: ' + new Date().toLocaleDateString() + '</p>');
-                
-                // Add items
-                printWindow.document.write('<h2>Items:</h2>');
-                for (let i = 0; i < cart.length; i++) {
-                    let item = cart[i];
-                    printWindow.document.write('<p>' + item.quantity + 'x ' + item.name + ' - ₹' + item.price * item.quantity + '</p>');
-                }
-                
-                // Add total and contact
-                printWindow.document.write('<h3>Total: ₹' + totalAmount + '</h3>');
-                printWindow.document.write('<hr>');
-                printWindow.document.write('<p>Call to order: +91 9840970514</p>');
-                printWindow.document.write('<p>Reference: ' + refCode + '</p>');
-                
-                // Print automatically
-                printWindow.document.write('<script>window.print();<\/script>');
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-            } else {
-                alert("Please allow pop-ups to print your order");
-            }
->>>>>>> 12779062473b5c80c57830def26f7b7484bfc94d
-        }
-    </script>
 </body>
 </html>
