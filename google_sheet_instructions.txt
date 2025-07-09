@@ -1,0 +1,26 @@
+Creating a Google Sheet product catalog for Suruli Greens...
+
+1. Go to https://docs.google.com/spreadsheets/
+2. Create a new spreadsheet
+3. Add the following columns:
+   - Product ID
+   - Product Name
+   - Product Category
+   - Description
+   - Price
+   - Availability
+
+4. Structure your data with the following guidelines:
+   - Group products by their categories
+   - Each product should have a unique ID
+   - Make sure each product has a category assigned
+   - Set availability as either "In Stock" or "Out of Stock"
+
+5. When the spreadsheet is ready:
+   - Make it public (Share > Anyone with the link can view)
+   - Copy the spreadsheet ID from the URL
+   - Update the SHEET_ID in the products.js file
+
+This will allow your customers to browse products by category and see individual items when they click on a category.
+
+Note: Updates to the Google Sheet will be reflected on your website after a short delay.
