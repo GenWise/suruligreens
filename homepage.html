@@ -729,6 +729,57 @@
     .checkout-btn:hover {
         background-color: #1da851;
     }
+
+    .alternative-checkout {
+        text-align: center;
+        padding: 20px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        margin-top: 20px;
+    }
+
+    .alternative-checkout p {
+        color: #555;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .phone-btn {
+        display: inline-block;
+        background-color: var(--light-green);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        margin-right: 10px;
+    }
+    
+    .phone-btn:hover {
+        background-color: #6A9248;
+    }
+    
+    .print-btn {
+        display: inline-block;
+        background-color: var(--brown);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .print-btn:hover {
+        background-color: #8a6530;
+    }
+
+    .small-text {
+        color: #777;
+        font-size: 12px;
+        margin-top: 5px;
+    }
 </style>
 </head>
 <body>
@@ -933,6 +984,12 @@
                 <div class="total-amount">₹0</div>
             </div>
             <button class="checkout-btn">Order via WhatsApp</button>
+            <div class="alternative-checkout">
+                <p>Not comfortable with WhatsApp?</p>
+                <a href="tel:+919840970514" class="phone-btn">Call us to order</a>
+                <button class="print-btn" onclick="printOrder()">Print Order</button>
+                <p class="small-text">Or simply note down your items and call +91 9840970514</p>
+            </div>
         </div>
     </div>
 
@@ -1231,6 +1288,48 @@
             // Initialize cart count
             updateCartCount();
         });
+
+        // Print Order Function
+        function printOrder() {
+            if (cart.length === 0) {
+                alert("Your cart is empty. Please add some items first.");
+                return;
+            }
+            
+            // Calculate total
+            let totalAmount = 0;
+            for (let i = 0; i < cart.length; i++) {
+                totalAmount += cart[i].price * cart[i].quantity;
+            }
+            
+            // Generate a simple reference code
+            let refCode = 'REF-' + Math.floor(Math.random() * 10000);
+            
+            // Create a simple printable version
+            let printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Your Order</title>');
+            printWindow.document.write('<style>body{font-family:Arial;padding:20px}</style></head><body>');
+            printWindow.document.write('<h1>Your Suruli Greens Order</h1>');
+            printWindow.document.write('<p>Date: ' + new Date().toLocaleDateString() + '</p>');
+            
+            // Add items
+            printWindow.document.write('<h2>Items:</h2>');
+            for (let i = 0; i < cart.length; i++) {
+                let item = cart[i];
+                printWindow.document.write('<p>' + item.quantity + 'x ' + item.name + ' - ₹' + item.price * item.quantity + '</p>');
+            }
+            
+            // Add total and contact
+            printWindow.document.write('<h3>Total: ₹' + totalAmount + '</h3>');
+            printWindow.document.write('<hr>');
+            printWindow.document.write('<p>Call to order: +91 9840970514</p>');
+            printWindow.document.write('<p>Reference: ' + refCode + '</p>');
+            
+            // Print automatically
+            printWindow.document.write('<script>window.print();</script>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+        }
     </script>
 </body>
 </html>
