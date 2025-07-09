@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A3A2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Suruli Greens - Hydroponic Microgreens & Greens</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -28,6 +31,11 @@
         font-family: 'Montserrat', sans-serif;
         background-color: var(--cream);
         color: var(--dark-green);
+        overflow-x: hidden;
+    }
+    
+    body.menu-open {
+        overflow: hidden;
     }
     
     .container {
@@ -544,11 +552,8 @@
         }
     }
     
+    /* Mobile Improvements */
     @media (max-width: 768px) {
-        header {
-            padding: 15px 0;
-        }
-        
         .header-content {
             flex-direction: column;
             gap: 15px;
@@ -556,10 +561,13 @@
         
         nav ul {
             margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         nav ul li {
-            margin-left: 20px;
+            margin: 5px 10px;
         }
         
         .hero-text h1 {
@@ -567,12 +575,18 @@
         }
         
         .hero-content {
-            padding: 0 30px;
+            padding: 0 20px;
         }
         
         .cta-buttons {
             flex-direction: column;
             gap: 15px;
+            width: 100%;
+        }
+        
+        .btn {
+            width: 100%;
+            text-align: center;
         }
         
         .brown-title {
@@ -585,6 +599,54 @@
         
         .tagline p {
             font-size: 20px;
+        }
+        
+        /* Cart Modal Mobile Improvements */
+        .cart-modal-content {
+            width: 95%;
+            max-height: 90vh;
+            border-radius: 15px;
+        }
+        
+        .cart-modal-header h3 {
+            font-size: 20px;
+        }
+        
+        .cart-items {
+            max-height: 40vh;
+        }
+        
+        .checkout-btn, .phone-btn, .print-btn {
+            padding: 15px 0;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        
+        .alternative-checkout {
+            padding: 15px;
+        }
+        
+        /* WhatsApp button position */
+        .whatsapp-btn {
+            bottom: 20px;
+            right: 20px;
+        }
+    }
+    
+    /* Small Phones */
+    @media (max-width: 375px) {
+        .hero-text h1 {
+            font-size: 40px;
+        }
+        
+        .product-info h3 {
+            font-size: 18px;
+        }
+        
+        .add-to-cart-btn {
+            padding: 6px 12px;
+            font-size: 14px;
         }
     }
 
@@ -780,6 +842,157 @@
         font-size: 12px;
         margin-top: 5px;
     }
+
+    /* Mobile Menu */
+    .mobile-menu-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 21px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+    
+    .mobile-menu-toggle span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background-color: var(--cream);
+        border-radius: 3px;
+        transition: all 0.3s ease;
+    }
+    
+    @media (max-width: 768px) {
+        .mobile-menu-toggle {
+            display: flex;
+            margin-left: auto;
+        }
+        
+        nav ul {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--dark-green);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        nav ul.active {
+            transform: translateY(0);
+        }
+        
+        nav ul li {
+            margin: 15px 0;
+        }
+        
+        .header-content {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    /* Notification */
+    .notification {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+        width: 90%;
+        max-width: 400px;
+        z-index: 2000;
+        display: none;
+        overflow: hidden;
+    }
+    
+    .notification.show {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+    
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .notification-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .notification-close {
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+    }
+    
+    .notification-body {
+        padding: 20px 15px;
+    }
+    
+    .notification-message {
+        margin-bottom: 15px;
+    }
+    
+    .notification-checkbox {
+        display: flex;
+        align-items: center;
+        margin: 15px 0;
+    }
+    
+    .notification-checkbox input {
+        margin-right: 10px;
+    }
+    
+    .notification-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .notification-btn {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .notification-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1999;
+        display: none;
+    }
+    
+    .notification-overlay.show {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 </style>
 </head>
 <body>
@@ -788,7 +1001,12 @@
             <div class="header-content">
                 <div class="logo">Suruli Greens</div>
                 <nav>
-                    <ul>
+                    <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <ul id="navMenu">
                         <li><a href="#">Home</a></li>
                         <li><a href="#">Shop</a></li>
                         <li><a href="#">About</a></li>
@@ -993,6 +1211,25 @@
         </div>
     </div>
 
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-header">
+            <span class="notification-title">Order Confirmation</span>
+            <span class="notification-close">&times;</span>
+        </div>
+        <div class="notification-body">
+            <p class="notification-message">Your order has been received! You will receive a confirmation on WhatsApp shortly.</p>
+            <div class="notification-checkbox">
+                <input type="checkbox" id="dontShowAgain">
+                <label for="dontShowAgain">Don't show this again</label>
+            </div>
+            <div class="notification-actions">
+                <button class="notification-btn">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="notification-overlay" id="notificationOverlay"></div>
+
     <script>
         // Shopping cart functionality
         let cart = [];
@@ -1000,6 +1237,34 @@
         const closeCart = document.querySelector('.close-cart');
         const checkoutBtn = document.querySelector('.checkout-btn');
         
+        // Notification functionality
+        const notification = document.getElementById('notification');
+        const notificationOverlay = document.getElementById('notificationOverlay');
+        const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
+        const notificationClose = document.querySelector('.notification-close');
+        const notificationBtn = document.querySelector('.notification-btn');
+
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            notification.className = 'notification'; // Clear previous classes
+            notification.classList.add('show', type);
+            notificationOverlay.classList.add('show');
+
+            if (dontShowAgainCheckbox.checked) {
+                localStorage.setItem('showNotification', 'false');
+            }
+
+            setTimeout(() => {
+                notification.classList.remove('show', type);
+                notificationOverlay.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        function closeNotification() {
+            notification.classList.remove('show');
+            notificationOverlay.classList.remove('show');
+        }
+
         // WhatsApp button functionality
         function openWhatsApp() {
             const phoneNumber = "919840970514"; // No plus sign, just country code and number
@@ -1145,6 +1410,7 @@
             
             // Close the modal
             cartModal.style.display = 'none';
+            showNotification('Your order has been received! You will receive a confirmation on WhatsApp shortly.');
         }
         
         // Example function to send data to MCP server
@@ -1287,6 +1553,43 @@
             
             // Initialize cart count
             updateCartCount();
+            
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const navMenu = document.getElementById('navMenu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    document.body.classList.toggle('menu-open');
+                });
+                
+                // Close menu when clicking a link
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        document.body.classList.remove('menu-open');
+                    });
+                });
+            }
+
+            // Notification close functionality
+            if (notificationClose) {
+                notificationClose.addEventListener('click', closeNotification);
+            }
+
+            // Notification overlay click to close
+            if (notificationOverlay) {
+                notificationOverlay.addEventListener('click', closeNotification);
+            }
+
+            // Initial check for notification preference
+            const showNotificationPreference = localStorage.getItem('showNotification');
+            if (showNotificationPreference === 'false') {
+                notification.style.display = 'none';
+                notificationOverlay.style.display = 'none';
+            }
         });
 
         // Print Order Function
@@ -1307,28 +1610,33 @@
             
             // Create a simple printable version
             let printWindow = window.open('', '_blank');
-            printWindow.document.write('<html><head><title>Your Order</title>');
-            printWindow.document.write('<style>body{font-family:Arial;padding:20px}</style></head><body>');
-            printWindow.document.write('<h1>Your Suruli Greens Order</h1>');
-            printWindow.document.write('<p>Date: ' + new Date().toLocaleDateString() + '</p>');
-            
-            // Add items
-            printWindow.document.write('<h2>Items:</h2>');
-            for (let i = 0; i < cart.length; i++) {
-                let item = cart[i];
-                printWindow.document.write('<p>' + item.quantity + 'x ' + item.name + ' - ₹' + item.price * item.quantity + '</p>');
+            if (printWindow) {
+                printWindow.document.write('<html><head><title>Your Order</title>');
+                printWindow.document.write('<style>body{font-family:Arial;padding:20px}</style>');
+                printWindow.document.write('</head><body>');
+                printWindow.document.write('<h1>Your Suruli Greens Order</h1>');
+                printWindow.document.write('<p>Date: ' + new Date().toLocaleDateString() + '</p>');
+                
+                // Add items
+                printWindow.document.write('<h2>Items:</h2>');
+                for (let i = 0; i < cart.length; i++) {
+                    let item = cart[i];
+                    printWindow.document.write('<p>' + item.quantity + 'x ' + item.name + ' - ₹' + item.price * item.quantity + '</p>');
+                }
+                
+                // Add total and contact
+                printWindow.document.write('<h3>Total: ₹' + totalAmount + '</h3>');
+                printWindow.document.write('<hr>');
+                printWindow.document.write('<p>Call to order: +91 9840970514</p>');
+                printWindow.document.write('<p>Reference: ' + refCode + '</p>');
+                
+                // Print automatically
+                printWindow.document.write('<script>window.print();<\/script>');
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+            } else {
+                alert("Please allow pop-ups to print your order");
             }
-            
-            // Add total and contact
-            printWindow.document.write('<h3>Total: ₹' + totalAmount + '</h3>');
-            printWindow.document.write('<hr>');
-            printWindow.document.write('<p>Call to order: +91 9840970514</p>');
-            printWindow.document.write('<p>Reference: ' + refCode + '</p>');
-            
-            // Print automatically
-            printWindow.document.write('<script>window.print();</script>');
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
         }
     </script>
 </body>
