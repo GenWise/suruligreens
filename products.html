@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A3A2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Suruli Greens - Products</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --dark-green: #1A3A2A;
+        --light-green: #7DA95A;
+        --cream: #F5F1E3;
+        --tan: #D9CBA3;
+        --brown: #A67C39;
+    }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: var(--cream);
+        color: var(--dark-green);
+        overflow-x: hidden;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+        background-color: var(--dark-green);
+        padding: 20px 0;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+    
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .logo {
+        color: var(--cream);
+        font-size: 28px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    nav ul {
+        display: flex;
+        list-style: none;
+    }
+    
+    nav ul li {
+        margin-left: 40px;
+    }
+    
+    nav ul li a {
+        color: var(--cream);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 18px;
+        transition: color 0.3s;
+    }
+    
+    nav ul li a:hover {
+        color: var(--light-green);
+    }
+    
+    .order-btn {
+        background-color: var(--light-green);
+        color: var(--cream);
+        padding: 12px 25px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    
+    .order-btn:hover {
+        background-color: #6A9248;
+    }
+    
+    /* Main Content */
+    .main-content {
+        margin-top: 120px;
+        padding: 40px 0;
+    }
+    
+    .category-section {
+        margin-bottom: 60px;
+    }
+    
+    .category-header {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .category-header h2 {
+        font-size: 36px;
+        color: var(--dark-green);
+        margin-bottom: 10px;
+    }
+    
+    .category-header p {
+        font-size: 18px;
+        color: var(--light-green);
+    }
+    
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+    }
+    
+    .product-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .product-info {
+        padding: 20px;
+    }
+    
+    .product-info h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: var(--dark-green);
+    }
+    
+    .product-info p {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 15px;
+    }
+    
+    .product-price {
+        font-weight: 700;
+        color: var(--brown);
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+    
+    .add-to-cart-btn {
+        background-color: var(--light-green);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s;
+    }
+    
+    .add-to-cart-btn:hover {
+        background-color: var(--dark-green);
+    }
+    
+    /* Footer */
+    footer {
+        background-color: var(--dark-green);
+        color: var(--cream);
+        padding: 60px 0 30px;
+    }
+    
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+    
+    .footer-section h3 {
+        color: var(--light-green);
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+    }
+    
+    .footer-section p, .footer-section a {
+        color: var(--cream);
+        margin-bottom: 10px;
+        display: block;
+        text-decoration: none;
+    }
+    
+    .footer-section a:hover {
+        color: var(--light-green);
+    }
+    
+    .copyright {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        nav ul {
+            display: none;
+        }
+        
+        .main-content {
+            margin-top: 100px;
+        }
+        
+        .category-header h2 {
+            font-size: 28px;
+        }
+        
+        .category-header p {
+            font-size: 16px;
+        }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Suruli Greens</div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Shop</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#" class="order-btn" id="headerOrderBtn">Order Now</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="category-section">
+                <div class="category-header">
+                    <h2>Fresh Microgreens</h2>
+                    <p>Nutrient-packed microgreens, harvested daily</p>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Sunflower Microgreens</h3>
+                            <p>Nutty flavor, crunchy texture, 30g pack</p>
+                            <div class="product-price">₹120</div>
+                            <button class="add-to-cart-btn" data-name="Sunflower Microgreens" data-price="120">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Pea Shoot Microgreens</h3>
+                            <p>Sweet pea flavor, tender shoots, 30g pack</p>
+                            <div class="product-price">₹140</div>
+                            <button class="add-to-cart-btn" data-name="Pea Shoot Microgreens" data-price="140">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Radish Microgreens</h3>
+                            <p>Spicy kick, vibrant color, 30g pack</p>
+                            <div class="product-price">₹120</div>
+                            <button class="add-to-cart-btn" data-name="Radish Microgreens" data-price="120">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Broccoli Microgreens</h3>
+                            <p>Mild broccoli flavor, nutrient-dense, 30g pack</p>
+                            <div class="product-price">₹150</div>
+                            <button class="add-to-cart-btn" data-name="Broccoli Microgreens" data-price="150">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Mustard Microgreens</h3>
+                            <p>Spicy mustard flavor, 30g pack</p>
+                            <div class="product-price">₹130</div>
+                            <button class="add-to-cart-btn" data-name="Mustard Microgreens" data-price="130">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-section">
+                <div class="category-header">
+                    <h2>Hydroponic Greens</h2>
+                    <p>Clean, pesticide-free leafy greens</p>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Lettuce - Romaine</h3>
+                            <p>Crisp, sweet lettuce, 100g pack</p>
+                            <div class="product-price">₹80</div>
+                            <button class="add-to-cart-btn" data-name="Lettuce - Romaine" data-price="80">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Lettuce - Butterhead</h3>
+                            <p>Soft, buttery texture, 100g pack</p>
+                            <div class="product-price">₹90</div>
+                            <button class="add-to-cart-btn" data-name="Lettuce - Butterhead" data-price="90">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Baby Spinach</h3>
+                            <p>Tender spinach leaves, 100g pack</p>
+                            <div class="product-price">₹100</div>
+                            <button class="add-to-cart-btn" data-name="Baby Spinach" data-price="100">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Kale Mix</h3>
+                            <p>Assorted kale varieties, 100g pack</p>
+                            <div class="product-price">₹120</div>
+                            <button class="add-to-cart-btn" data-name="Kale Mix" data-price="120">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Swiss Chard</h3>
+                            <p>Colorful stems, earthy flavor, 100g pack</p>
+                            <div class="product-price">₹110</div>
+                            <button class="add-to-cart-btn" data-name="Swiss Chard" data-price="110">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-section">
+                <div class="category-header">
+                    <h2>Fresh Herbs</h2>
+                    <p>Aromatic herbs for your cooking needs</p>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Basil</h3>
+                            <p>Fragrant Italian basil, 30g bunch</p>
+                            <div class="product-price">₹100</div>
+                            <button class="add-to-cart-btn" data-name="Basil" data-price="100">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Mint</h3>
+                            <p>Fresh cooling mint, 30g bunch</p>
+                            <div class="product-price">₹90</div>
+                            <button class="add-to-cart-btn" data-name="Mint" data-price="90">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Coriander/Cilantro</h3>
+                            <p>Aromatic herb, 30g bunch</p>
+                            <div class="product-price">₹80</div>
+                            <button class="add-to-cart-btn" data-name="Coriander/Cilantro" data-price="80">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Rosemary</h3>
+                            <p>Woody, aromatic sprigs, 20g pack</p>
+                            <div class="product-price">₹110</div>
+                            <button class="add-to-cart-btn" data-name="Rosemary" data-price="110">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Thyme</h3>
+                            <p>Delicate, earthy herb, 20g pack</p>
+                            <div class="product-price">₹100</div>
+                            <button class="add-to-cart-btn" data-name="Thyme" data-price="100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-section">
+                <div class="category-header">
+                    <h2>Weekly Box</h2>
+                    <p>Curated selection delivered weekly</p>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Small Weekly Box</h3>
+                            <p>2 microgreens, 2 leafy greens, 1 herb</p>
+                            <div class="product-price">₹450</div>
+                            <button class="add-to-cart-btn" data-name="Small Weekly Box" data-price="450">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Medium Weekly Box</h3>
+                            <p>3 microgreens, 3 leafy greens, 2 herbs</p>
+                            <div class="product-price">₹650</div>
+                            <button class="add-to-cart-btn" data-name="Medium Weekly Box" data-price="650">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Large Weekly Box</h3>
+                            <p>4 microgreens, 4 leafy greens, 3 herbs</p>
+                            <div class="product-price">₹950</div>
+                            <button class="add-to-cart-btn" data-name="Large Weekly Box" data-price="950">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Family Box</h3>
+                            <p>Double quantities of Medium box</p>
+                            <div class="product-price">₹1200</div>
+                            <button class="add-to-cart-btn" data-name="Family Box" data-price="1200">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>Chef's Box</h3>
+                            <p>Premium selection for restaurants</p>
+                            <div class="product-price">₹1500</div>
+                            <button class="add-to-cart-btn" data-name="Chef's Box" data-price="1500">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p>WhatsApp: +91 9840970514</p>
+                    <p>Email: hello@suruligreens.com</p>
+                    <p>Chennai, Tamil Nadu</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Shop</h3>
+                    <a href="#">Microgreens</a>
+                    <a href="#">Leafy Greens</a>
+                    <a href="#">Herb Packs</a>
+                    <a href="#">Subscriptions</a>
+                </div>
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <a href="#">Our Story</a>
+                    <a href="#">Growing Methods</a>
+                    <a href="#">Sustainability</a>
+                    <a href="#">FAQ</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Delivery</h3>
+                    <p>Free delivery on orders above ₹500</p>
+                    <p>Same-day delivery available</p>
+                    <p>Delivery zones: Chennai city limits</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Suruli Greens. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Shopping cart functionality
+        let cart = [];
+        
+        // Add to cart functionality
+        function addToCart(productName, price, quantity = 1) {
+            // Check if product already exists in cart
+            const existingProduct = cart.find(item => item.name === productName);
+            
+            if (existingProduct) {
+                existingProduct.quantity += quantity;
+            } else {
+                cart.push({
+                    name: productName,
+                    price: price,
+                    quantity: quantity
+                });
+            }
+            
+            console.log("Cart updated:", cart);
+            alert(`${productName} added to cart!`);
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click events to Add to Cart buttons
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+            
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productName = this.dataset.name;
+                    const price = parseInt(this.dataset.price);
+                    
+                    addToCart(productName, price);
+                    
+                    // Show confirmation
+                    this.textContent = "Added!";
+                    this.style.backgroundColor = "#4a7c59";
+                    
+                    setTimeout(() => {
+                        this.textContent = "Add to Cart";
+                        this.style.backgroundColor = "";
+                    }, 1000);
+                });
+            });
+            
+            // Set up header Order Now button
+            const headerOrderBtn = document.getElementById('headerOrderBtn');
+            if (headerOrderBtn) {
+                headerOrderBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (cart.length === 0) {
+                        alert("Your cart is empty. Please add some items first.");
+                        return;
+                    }
+                    
+                    // Format the order for WhatsApp
+                    let orderText = "Hi Suruli Greens! I'd like to place an order for:\n\n";
+                    
+                    cart.forEach(item => {
+                        orderText += `${item.quantity}x ${item.name} - ₹${item.price * item.quantity}\n`;
+                    });
+                    
+                    const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+                    orderText += `\nTotal: ₹${totalAmount}`;
+                    orderText += "\n\nPlease confirm my order. Thanks!";
+                    
+                    // Encode the text for URL
+                    const encodedText = encodeURIComponent(orderText);
+                    
+                    // Format for WhatsApp
+                    const phoneNumber = "919840970514"; // No plus sign, just country code and number
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
+                    
+                    // Open WhatsApp with the pre-filled message
+                    window.open(whatsappUrl, "_blank");
+                    
+                    // Clear the cart
+                    cart = [];
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
