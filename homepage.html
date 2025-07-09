@@ -399,7 +399,7 @@
         margin-bottom: 15px;
     }
     
-    .add-to-cart-btn {
+    .add-to-cart-btn, .view-products-btn {
         background-color: var(--light-green);
         color: white;
         border: none;
@@ -411,9 +411,14 @@
         font-family: 'Montserrat', sans-serif;
     }
     
-    .add-to-cart-btn:hover {
+    .add-to-cart-btn:hover, .view-products-btn:hover {
         background-color: var(--dark-green);
         transform: translateY(-2px);
+    }
+    
+    .view-products-btn {
+        width: 100%;
+        padding: 10px 15px;
     }
     
     /* Tagline Section */
@@ -899,6 +904,90 @@
         }
     }
 
+    /* Product Modal */
+    .product-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1001;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .product-modal-content {
+        background-color: var(--cream);
+        border-radius: 10px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    }
+    
+    .product-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .product-modal-header h3 {
+        color: var(--dark-green);
+        margin: 0;
+        font-size: 24px;
+    }
+    
+    .close-product-modal {
+        font-size: 28px;
+        font-weight: bold;
+        color: #777;
+        cursor: pointer;
+    }
+    
+    .close-product-modal:hover {
+        color: var(--dark-green);
+    }
+    
+    .product-modal-body {
+        padding: 20px;
+    }
+    
+    .product-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .product-item {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .product-item h4 {
+        color: var(--dark-green);
+        margin: 0 0 10px 0;
+        font-size: 18px;
+    }
+    
+    .product-item-description {
+        color: #555;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .product-item-price {
+        color: var(--brown);
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
     /* Notification */
     .notification {
         position: fixed;
@@ -1087,53 +1176,23 @@
                 <h2>Our Products</h2>
             </div>
             <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1515283736202-cae4a8e5a0d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWljcm9ncmVlbnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Microgreens">
-                    </div>
-                    <div class="product-info">
-                        <h3>Fresh Microgreens</h3>
-                        <p>Nutrient-packed microgreens, harvested daily</p>
-                        <div class="product-price">From ₹120/pack</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1622205313162-be1d5712a43f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bGVhZnklMjBncmVlbnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Leafy Greens">
-                    </div>
-                    <div class="product-info">
-                        <h3>Hydroponic Greens</h3>
-                        <p>Clean, pesticide-free leafy greens</p>
-                        <div class="product-price">From ₹80/pack</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1601648764658-cf37e8c89b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aGVyYnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Fresh Herbs">
-                    </div>
-                    <div class="product-info">
-                        <h3>Fresh Herbs</h3>
-                        <p>Aromatic herbs for your cooking needs</p>
-                        <div class="product-price">From ₹100/pack</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1543168256-418811576931?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Z3JlZW4lMjBib3h8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" alt="Weekly Box">
-                    </div>
-                    <div class="product-info">
-                        <h3>Weekly Box</h3>
-                        <p>Curated selection delivered weekly</p>
-                        <div class="product-price">From ₹450/week</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
-                    </div>
-                </div>
+                <!-- Product categories will be populated here from JavaScript -->
             </div>
         </div>
     </section>
+    
+    <!-- Product Details Modal -->
+    <div class="product-modal" id="productModal">
+        <div class="product-modal-content">
+            <div class="product-modal-header">
+                <h3 id="productCategoryTitle">Category Products</h3>
+                <span class="close-product-modal">&times;</span>
+            </div>
+            <div class="product-modal-body">
+                <!-- Individual products will be populated here -->
+            </div>
+        </div>
+    </div>
 
     <section class="tagline">
         <div class="container">
@@ -1205,7 +1264,6 @@
             <div class="alternative-checkout">
                 <p>Not comfortable with WhatsApp?</p>
                 <a href="tel:+919840970514" class="phone-btn">Call us to order</a>
-                <button class="print-btn" onclick="printOrder()">Print Order</button>
                 <p class="small-text">Or simply note down your items and call +91 9840970514</p>
             </div>
         </div>
@@ -1230,12 +1288,21 @@
     </div>
     <div class="notification-overlay" id="notificationOverlay"></div>
 
+    <!-- Include the products data file -->
+    <script src="products.js"></script>
+    
     <script>
         // Shopping cart functionality
         let cart = [];
         const cartModal = document.getElementById('cartModal');
         const closeCart = document.querySelector('.close-cart');
         const checkoutBtn = document.querySelector('.checkout-btn');
+        
+        // Product modal functionality
+        const productModal = document.getElementById('productModal');
+        const closeProductModal = document.querySelector('.close-product-modal');
+        const productCategoryTitle = document.getElementById('productCategoryTitle');
+        const productModalBody = document.querySelector('.product-modal-body');
         
         // Notification functionality
         const notification = document.getElementById('notification');
@@ -1489,30 +1556,14 @@
         
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click events to Add to Cart buttons
-            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+            // Populate product categories
+            populateProductCategories();
             
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent card click
-                    const card = this.closest('.product-card');
-                    const productName = card.querySelector('h3').textContent;
-                    const priceText = card.querySelector('.product-price').textContent;
-                    // Extract numeric price from text like "From ₹120/pack"
-                    const price = parseInt(priceText.match(/₹(\d+)/)[1]);
-                    
-                    addToCart(productName, price);
-                    
-                    // Show confirmation
-                    this.textContent = "Added!";
-                    this.style.backgroundColor = "#4a7c59";
-                    
-                    setTimeout(() => {
-                        this.textContent = "Add to Cart";
-                        this.style.backgroundColor = "";
-                    }, 1000);
-                });
-            });
+            // Set up product category click events
+            setupProductCategoryEvents();
+            
+            // Set up product modal events
+            setupProductModalEvents();
             
             // Set up WhatsApp button to open cart modal
             const whatsappBtn = document.querySelector('.whatsapp-btn');
@@ -1592,51 +1643,137 @@
             }
         });
 
-        // Print Order Function
-        function printOrder() {
-            if (cart.length === 0) {
-                alert("Your cart is empty. Please add some items first.");
-                return;
-            }
+        // Populate product categories in the grid
+        function populateProductCategories() {
+            const productsGrid = document.querySelector('.products-grid');
+            if (!productsGrid) return;
             
-            // Calculate total
-            let totalAmount = 0;
-            for (let i = 0; i < cart.length; i++) {
-                totalAmount += cart[i].price * cart[i].quantity;
-            }
+            // Clear existing content
+            productsGrid.innerHTML = '';
             
-            // Generate a simple reference code
-            let refCode = 'REF-' + Math.floor(Math.random() * 10000);
-            
-            // Create a simple printable version
-            let printWindow = window.open('', '_blank');
-            if (printWindow) {
-                printWindow.document.write('<html><head><title>Your Order</title>');
-                printWindow.document.write('<style>body{font-family:Arial;padding:20px}</style>');
-                printWindow.document.write('</head><body>');
-                printWindow.document.write('<h1>Your Suruli Greens Order</h1>');
-                printWindow.document.write('<p>Date: ' + new Date().toLocaleDateString() + '</p>');
+            // Add each product category
+            for (const categoryName in productData) {
+                const category = productData[categoryName];
                 
-                // Add items
-                printWindow.document.write('<h2>Items:</h2>');
-                for (let i = 0; i < cart.length; i++) {
-                    let item = cart[i];
-                    printWindow.document.write('<p>' + item.quantity + 'x ' + item.name + ' - ₹' + item.price * item.quantity + '</p>');
+                const categoryCard = document.createElement('div');
+                categoryCard.classList.add('product-card');
+                categoryCard.dataset.category = categoryName;
+                
+                categoryCard.innerHTML = `
+                    <div class="product-image">
+                        <img src="${category.image}" alt="${categoryName}">
+                    </div>
+                    <div class="product-info">
+                        <h3>${categoryName}</h3>
+                        <p>${category.description}</p>
+                        <div class="product-price">From ₹${getLowestPrice(category.products)}</div>
+                        <button class="view-products-btn">View Products</button>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(categoryCard);
+            }
+        }
+        
+        // Get the lowest price from a category's products
+        function getLowestPrice(products) {
+            if (!products || products.length === 0) return 0;
+            return Math.min(...products.map(product => product.price));
+        }
+        
+        // Set up click events for product categories
+        function setupProductCategoryEvents() {
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const categoryName = this.dataset.category;
+                    showProductsModal(categoryName);
+                });
+                
+                // Also set up the View Products button
+                const viewBtn = card.querySelector('.view-products-btn');
+                if (viewBtn) {
+                    viewBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card click
+                        const categoryName = card.dataset.category;
+                        showProductsModal(categoryName);
+                    });
                 }
+            });
+        }
+        
+        // Show the products modal for a specific category
+        function showProductsModal(categoryName) {
+            const category = productData[categoryName];
+            if (!category) return;
+            
+            // Set the modal title
+            productCategoryTitle.textContent = categoryName;
+            
+            // Clear and populate the modal body
+            productModalBody.innerHTML = '';
+            
+            // Create product list container
+            const productList = document.createElement('div');
+            productList.classList.add('product-list');
+            
+            // Add each product
+            category.products.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.classList.add('product-item');
                 
-                // Add total and contact
-                printWindow.document.write('<h3>Total: ₹' + totalAmount + '</h3>');
-                printWindow.document.write('<hr>');
-                printWindow.document.write('<p>Call to order: +91 9840970514</p>');
-                printWindow.document.write('<p>Reference: ' + refCode + '</p>');
+                productItem.innerHTML = `
+                    <h4>${product.name}</h4>
+                    <div class="product-item-description">${product.description}</div>
+                    <div class="product-item-price">₹${product.price}</div>
+                    <button class="add-to-cart-btn" data-name="${product.name}" data-price="${product.price}">Add to Cart</button>
+                `;
                 
-                // Print automatically
-                printWindow.document.write('<script>window.print();<\/script>');
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-            } else {
-                alert("Please allow pop-ups to print your order");
+                productList.appendChild(productItem);
+            });
+            
+            productModalBody.appendChild(productList);
+            
+            // Add click events to the Add to Cart buttons
+            const addToCartButtons = productModalBody.querySelectorAll('.add-to-cart-btn');
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productName = this.dataset.name;
+                    const price = parseInt(this.dataset.price);
+                    
+                    addToCart(productName, price);
+                    
+                    // Show confirmation
+                    this.textContent = "Added!";
+                    this.style.backgroundColor = "#4a7c59";
+                    
+                    setTimeout(() => {
+                        this.textContent = "Add to Cart";
+                        this.style.backgroundColor = "";
+                    }, 1000);
+                });
+            });
+            
+            // Show the modal
+            productModal.style.display = 'flex';
+        }
+        
+        // Set up product modal events
+        function setupProductModalEvents() {
+            // Close modal when clicking X
+            if (closeProductModal) {
+                closeProductModal.addEventListener('click', function() {
+                    productModal.style.display = 'none';
+                });
             }
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === productModal) {
+                    productModal.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>
