@@ -1,9 +1,15 @@
 // Suruli Greens Product Data
 // This script fetches product data from a Google Sheet
 
-// Google Sheet ID - Replace with your actual Google Sheet ID
-const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';
-const API_KEY = 'YOUR_API_KEY_HERE'; // Optional: Only needed if sheet is not public
+// Import configuration from config.js
+let SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+let API_KEY = ''; // Optional: Only needed if sheet is not public
+
+// Try to get config from global config object if available
+if (typeof config !== 'undefined') {
+    SHEET_ID = config.SHEET_ID || SHEET_ID;
+    API_KEY = config.API_KEY || API_KEY;
+}
 
 // Initialize product data structure
 let productData = {};
