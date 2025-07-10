@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Categories - CORS Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        #debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Categories - CORS Test</h1>
+    <p>This page tests loading product categories from Google Sheets using a CORS-friendly approach.</p>
+    
+    <div class="products-grid" id="products-grid">
+        <!-- Product categories will be loaded here -->
+        <div class="product-card">Loading...</div>
+    </div>
+    
+    <div id="debug-info">Debug information will appear here...</div>
+    
+    <script>
+        // Simple version of the product data structure
+        let productData = {};
+        const debugInfo = document.getElementById('debug-info');
+        const productsGrid = document.getElementById('products-grid');
+        
+        // Log to both console and the debug div
+        function log(message, data) {
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            const msg = `[${timestamp}] ${message}`;
+            console.log(msg, data);
+            
+            let displayData = '';
+            if (data !== undefined) {
+                try {
+                    displayData = typeof data === 'object' ? 
+                        ': ' + JSON.stringify(data, null, 2) : 
+                        ': ' + data;
+                } catch (e) {
+                    displayData = ': [Complex Object]';
+                }
+            }
+            
+            debugInfo.textContent += msg + displayData + '\n';
+        }
+        
+        // Fetch product data from Google Sheet using JSONP approach
+        function fetchProductData() {
+            log('Starting to fetch product data using JSONP approach');
+            
+            const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+            const SHEET_NAME = 'Sheet1'; // Change this to your actual sheet name
+            
+            // Use the Google Visualization API Query Language
+            // This approach avoids CORS issues
+            const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}&tq=SELECT%20*`;
+            
+            log('Fetching from URL', sheetURL);
+            
+            // Create a script element to load the data
+            const script = document.createElement('script');
+            script.src = sheetURL;
+            
+            // When the script loads, Google will call the google.visualization.Query.setResponse function
+            // We need to define this function to handle the response
+            window.google = {
+                visualization: {
+                    Query: {
+                        setResponse: function(response) {
+                            log('Response received from Google Sheets');
+                            handleGoogleSheetsResponse(response);
+                        }
+                    }
+                }
+            };
+            
+            // Add error handling
+            script.onerror = function() {
+                log('Error loading Google Sheets data');
+                loadSampleData();
+            };
+            
+            // Add the script to the page
+            document.body.appendChild(script);
+        }
+        
+        // Handle the response from Google Sheets
+        function handleGoogleSheetsResponse(response) {
+            try {
+                log('Processing Google Sheets response');
+                
+                // Convert the response to a string
+                const responseText = JSON.stringify(response);
+                log('Response text length', responseText.length);
+                
+                // Parse the table data
+                const table = response.table;
+                if (!table || !table.rows || table.rows.length === 0) {
+                    throw new Error('No data in the response');
+                }
+                
+                log('Number of rows', table.rows.length);
+                
+                // Process the data into our structure
+                processSheetData(table);
+                
+                // After processing, populate the UI
+                populateProductCategories();
+                
+                log('Product data loaded successfully', Object.keys(productData));
+            } catch (error) {
+                log('Error processing Google Sheets response', error.message);
+                loadSampleData();
+            }
+        }
+        
+        // Process the sheet data into our structure
+        function processSheetData(tableData) {
+            log('Processing sheet data');
+            
+            // Clear existing data
+            productData = {};
+            
+            // Skip the header row (row 0)
+            for (let i = 1; i < tableData.rows.length; i++) {
+                const row = tableData.rows[i].c;
+                if (!row) continue;
+                
+                // Extract data from each row
+                const productId = row[0]?.v || '';
+                const name = row[1]?.v || '';
+                const category = row[2]?.v || 'Uncategorized';
+                const description = row[3]?.v || '';
+                const price = parseFloat(row[4]?.v) || 0;
+                const availability = row[5]?.v || 'In Stock';
+                
+                log(`Row ${i}`, { productId, name, category, price });
+                
+                // Create category if it doesn't exist
+                if (!productData[category]) {
+                    productData[category] = {
+                        description: `${category} from Suruli Greens`,
+                        image: `https://via.placeholder.com/300x200?text=${encodeURIComponent(category)}`,
+                        products: []
+                    };
+                }
+                
+                // Add product to category
+                productData[category].products.push({
+                    id: productId,
+                    name: name,
+                    description: description,
+                    price: price,
+                    availability: availability
+                });
+            }
+            
+            log('Categories created', Object.keys(productData));
+        }
+        
+        // Populate product categories in the grid
+        function populateProductCategories() {
+            log('Populating product categories');
+            
+            // Clear existing content
+            productsGrid.innerHTML = '';
+            
+            const categories = Object.keys(productData);
+            log('Number of categories to display', categories.length);
+            
+            if (categories.length === 0) {
+                productsGrid.innerHTML = '<div class="product-card"><p>No product categories found.</p></div>';
+                return;
+            }
+            
+            // Add each product category
+            for (const categoryName of categories) {
+                const category = productData[categoryName];
+                
+                const categoryCard = document.createElement('div');
+                categoryCard.classList.add('product-card');
+                
+                categoryCard.innerHTML = `
+                    <h3>${categoryName}</h3>
+                    <p>${category.description}</p>
+                    <p>Products: ${category.products.length}</p>
+                    <ul>
+                        ${category.products.map(p => `<li>${p.name}: ₹${p.price}</li>`).join('')}
+                    </ul>
+                `;
+                
+                productsGrid.appendChild(categoryCard);
+            }
+            
+            log('Categories populated successfully');
+        }
+        
+        // Load sample data in case the Google Sheet fetch fails
+        function loadSampleData() {
+            log('Loading sample data');
+            
+            productData = {
+                "Fresh Microgreens": {
+                    description: "Nutrient-dense microgreens grown hydroponically",
+                    image: "https://via.placeholder.com/300x200?text=Microgreens",
+                    products: [
+                        { id: "MG001", name: "Sunflower Microgreens", description: "Nutty flavor crunchy texture 30g pack", price: 120, availability: "In Stock" },
+                        { id: "MG002", name: "Pea Shoot Microgreens", description: "Sweet pea flavor tender shoots 30g pack", price: 140, availability: "In Stock" }
+                    ]
+                },
+                "Hydroponic Greens": {
+                    description: "Fresh leafy greens grown in our hydroponic system",
+                    image: "https://via.placeholder.com/300x200?text=Hydroponic",
+                    products: [
+                        { id: "HG001", name: "Lettuce - Romaine", description: "Crisp sweet lettuce 100g pack", price: 80, availability: "In Stock" },
+                        { id: "HG002", name: "Lettuce - Butterhead", description: "Soft buttery texture 100g pack", price: 90, availability: "In Stock" }
+                    ]
+                }
+            };
+            
+            // Populate UI with sample data
+            populateProductCategories();
+        }
+        
+        // Alternative method using CSV export
+        function fetchProductDataCSV() {
+            log('Starting to fetch product data as CSV');
+            
+            const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+            const csvURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+            
+            log('Fetching from URL', csvURL);
+            
+            fetch(csvURL)
+                .then(response => {
+                    log('Response status', response.status);
+                    return response.text();
+                })
+                .then(text => {
+                    log('CSV data received', text.length);
+                    processCSVData(text);
+                })
+                .catch(error => {
+                    log('Error fetching CSV data', error.message);
+                    loadSampleData();
+                });
+        }
+        
+        // Process CSV data
+        function processCSVData(csvText) {
+            log('Processing CSV data');
+            
+            // Parse CSV
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',');
+            
+            log('CSV headers', headers);
+            
+            // Clear existing data
+            productData = {};
+            
+            // Process each line (skip header)
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const values = lines[i].split(',');
+                
+                const productId = values[0] || '';
+                const name = values[1] || '';
+                const category = values[2] || 'Uncategorized';
+                const description = values[3] || '';
+                const price = parseFloat(values[4]) || 0;
+                const availability = values[5] || 'In Stock';
+                
+                log(`CSV Row ${i}`, { productId, name, category, price });
+                
+                // Create category if it doesn't exist
+                if (!productData[category]) {
+                    productData[category] = {
+                        description: `${category} from Suruli Greens`,
+                        image: `https://via.placeholder.com/300x200?text=${encodeURIComponent(category)}`,
+                        products: []
+                    };
+                }
+                
+                // Add product to category
+                productData[category].products.push({
+                    id: productId,
+                    name: name,
+                    description: description,
+                    price: price,
+                    availability: availability
+                });
+            }
+            
+            log('Categories created from CSV', Object.keys(productData));
+            populateProductCategories();
+        }
+        
+        // Start fetching data when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOM content loaded');
+            
+            // Try both methods
+            fetchProductData(); // Try JSONP approach first
+            
+            // If JSONP fails, try CSV after a delay
+            setTimeout(() => {
+                if (Object.keys(productData).length === 0) {
+                    log('JSONP approach failed, trying CSV approach');
+                    fetchProductDataCSV();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html> 
