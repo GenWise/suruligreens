@@ -16,31 +16,173 @@ let productData = {};
 
 // Fetch product data from Google Sheet
 async function fetchProductData() {
+    console.log('Fetching product data...');
+    
     try {
-        // For a public sheet, we can use this simpler URL
-        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-        
-        const response = await fetch(sheetURL);
-        const text = await response.text();
-        
-        // Google's response is not pure JSON, it has a prefix we need to remove
-        const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-        const data = JSON.parse(jsonText);
-        
-        // Process the data into our structure
-        processSheetData(data.table);
-        
-        // After processing, populate the UI
-        populateProductCategories();
-        setupProductCategoryEvents();
-        
-        console.log('Product data loaded successfully:', productData);
+        // First try the direct approach
+        await fetchDirectMethod();
     } catch (error) {
-        console.error('Error fetching product data:', error);
+        console.error('Direct method failed:', error);
         
-        // Fallback to sample data if fetch fails
-        loadSampleData();
+        // If direct method fails, try JSONP approach
+        try {
+            await fetchJSONPMethod();
+        } catch (jsonpError) {
+            console.error('JSONP method failed:', jsonpError);
+            
+            // If JSONP fails, try CSV approach
+            try {
+                await fetchCSVMethod();
+            } catch (csvError) {
+                console.error('CSV method failed:', csvError);
+                
+                // If all methods fail, load sample data
+                loadSampleData();
+            }
+        }
     }
+}
+
+// Direct fetch method (may have CORS issues)
+async function fetchDirectMethod() {
+    console.log('Trying direct fetch method...');
+    
+    // For a public sheet, we can use this simpler URL
+    const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    
+    const response = await fetch(sheetURL);
+    const text = await response.text();
+    
+    // Google's response is not pure JSON, it has a prefix we need to remove
+    const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+    const data = JSON.parse(jsonText);
+    
+    // Process the data into our structure
+    processSheetData(data.table);
+    
+    // After processing, populate the UI
+    populateProductCategories();
+    setupProductCategoryEvents();
+    
+    console.log('Product data loaded successfully using direct method:', productData);
+    return true;
+}
+
+// JSONP method (avoids CORS issues)
+function fetchJSONPMethod() {
+    console.log('Trying JSONP method...');
+    
+    return new Promise((resolve, reject) => {
+        const SHEET_NAME = 'Sheet1'; // Change this to your actual sheet name
+        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}&tq=SELECT%20*`;
+        
+        // Create a script element to load the data
+        const script = document.createElement('script');
+        script.src = sheetURL;
+        
+        // Set a timeout to reject the promise if it takes too long
+        const timeout = setTimeout(() => {
+            reject(new Error('JSONP request timed out'));
+            cleanup();
+        }, 10000);
+        
+        // Function to clean up after the request
+        const cleanup = () => {
+            delete window.google;
+            document.body.removeChild(script);
+            clearTimeout(timeout);
+        };
+        
+        // When the script loads, Google will call the google.visualization.Query.setResponse function
+        window.google = {
+            visualization: {
+                Query: {
+                    setResponse: function(response) {
+                        try {
+                            // Process the data
+                            processSheetData(response.table);
+                            
+                            // After processing, populate the UI
+                            populateProductCategories();
+                            setupProductCategoryEvents();
+                            
+                            console.log('Product data loaded successfully using JSONP method:', productData);
+                            resolve(true);
+                        } catch (error) {
+                            reject(error);
+                        } finally {
+                            cleanup();
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Add error handling
+        script.onerror = function() {
+            reject(new Error('Error loading Google Sheets data via JSONP'));
+            cleanup();
+        };
+        
+        // Add the script to the page
+        document.body.appendChild(script);
+    });
+}
+
+// CSV method (another approach to avoid CORS issues)
+async function fetchCSVMethod() {
+    console.log('Trying CSV method...');
+    
+    const csvURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+    
+    const response = await fetch(csvURL);
+    const text = await response.text();
+    
+    // Process CSV data
+    const lines = text.split('\n');
+    const headers = lines[0].split(',');
+    
+    // Clear existing data
+    productData = {};
+    
+    // Process each line (skip header)
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const values = lines[i].split(',');
+        
+        const productId = values[0] || '';
+        const name = values[1] || '';
+        const category = values[2] || 'Uncategorized';
+        const description = values[3] || '';
+        const price = parseFloat(values[4]) || 0;
+        const availability = values[5] || 'In Stock';
+        
+        // Create category if it doesn't exist
+        if (!productData[category]) {
+            productData[category] = {
+                description: `${category} from Suruli Greens`,
+                image: `https://source.unsplash.com/300x200/?${encodeURIComponent(category.toLowerCase())}`,
+                products: []
+            };
+        }
+        
+        // Add product to category
+        productData[category].products.push({
+            id: productId,
+            name: name,
+            description: description,
+            price: price,
+            availability: availability
+        });
+    }
+    
+    // After processing, populate the UI
+    populateProductCategories();
+    setupProductCategoryEvents();
+    
+    console.log('Product data loaded successfully using CSV method:', productData);
+    return true;
 }
 
 // Process the sheet data into our structure
@@ -51,6 +193,7 @@ function processSheetData(tableData) {
     // Skip the header row (row 0)
     for (let i = 1; i < tableData.rows.length; i++) {
         const row = tableData.rows[i].c;
+        if (!row) continue;
         
         // Extract data from each row
         // Assuming columns are: Product ID, Name, Category, Description, Price, Availability
@@ -99,7 +242,7 @@ function populateProductCategories() {
         
         categoryCard.innerHTML = `
             <div class="product-image">
-                <img src="${category.image}" alt="${categoryName}">
+                <img src="${category.image}" alt="${categoryName}" onerror="this.src='https://via.placeholder.com/300x200?text=${encodeURIComponent(categoryName)}'">
             </div>
             <div class="product-info">
                 <h3>${categoryName}</h3>
@@ -216,6 +359,8 @@ function showProductsModal(categoryName) {
 
 // Load sample data in case the Google Sheet fetch fails
 function loadSampleData() {
+    console.log('Loading sample data...');
+    
     productData = {
         "Fresh Microgreens": {
             description: "Nutrient-dense microgreens grown hydroponically",
@@ -266,12 +411,19 @@ function loadSampleData() {
     // Populate UI with sample data
     populateProductCategories();
     setupProductCategoryEvents();
+    
+    console.log('Sample data loaded successfully');
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM content loaded, initializing product data...');
+    
     // Try to fetch from Google Sheet
-    fetchProductData();
+    fetchProductData().catch(error => {
+        console.error('All fetch methods failed:', error);
+        loadSampleData();
+    });
     
     // Set up product modal events
     setupProductModalEvents();
