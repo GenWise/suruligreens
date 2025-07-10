@@ -9,6 +9,7 @@ Creating a Google Sheet product catalog for Suruli Greens...
    - Description
    - Price
    - Availability
+   - Image URL (optional - will use auto-generated images if empty)
 
 4. Structure your data with the following guidelines:
    - Group products by their categories

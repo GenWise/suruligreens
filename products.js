@@ -157,6 +157,7 @@ async function fetchCSVMethod() {
         const description = values[3] || '';
         const price = parseFloat(values[4]) || 0;
         const availability = values[5] || 'In Stock';
+        const imageUrl = values[6] || ''; // Assuming image URL is in column 7
         
         // Create category if it doesn't exist
         if (!productData[category]) {
@@ -173,7 +174,8 @@ async function fetchCSVMethod() {
             name: name,
             description: description,
             price: price,
-            availability: availability
+            availability: availability,
+            imageUrl: imageUrl || `https://source.unsplash.com/300x200/?${encodeURIComponent(name.toLowerCase())}`
         });
     }
     
@@ -196,13 +198,14 @@ function processSheetData(tableData) {
         if (!row) continue;
         
         // Extract data from each row
-        // Assuming columns are: Product ID, Name, Category, Description, Price, Availability
+        // Assuming columns are: Product ID, Name, Category, Description, Price, Availability, Image URL
         const productId = row[0]?.v || '';
         const name = row[1]?.v || '';
         const category = row[2]?.v || 'Uncategorized';
         const description = row[3]?.v || '';
         const price = parseFloat(row[4]?.v) || 0;
         const availability = row[5]?.v || 'In Stock';
+        const imageUrl = row[6]?.v || '';
         
         // Create category if it doesn't exist
         if (!productData[category]) {
@@ -219,7 +222,8 @@ function processSheetData(tableData) {
             name: name,
             description: description,
             price: price,
-            availability: availability
+            availability: availability,
+            imageUrl: imageUrl || `https://source.unsplash.com/300x200/?${encodeURIComponent(name.toLowerCase())}`
         });
     }
 }
@@ -315,6 +319,9 @@ function showProductsModal(categoryName) {
         const availabilityClass = product.availability === 'In Stock' ? 'in-stock' : 'out-of-stock';
         
         productItem.innerHTML = `
+            <div class="product-item-image">
+                <img src="${product.imageUrl}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/100x100?text=${encodeURIComponent(product.name)}'">
+            </div>
             <h4>${product.name}</h4>
             <div class="product-item-description">${product.description}</div>
             <div class="product-item-price">₹${product.price}</div>
@@ -366,44 +373,44 @@ function loadSampleData() {
             description: "Nutrient-dense microgreens grown hydroponically",
             image: "https://source.unsplash.com/300x200/?microgreens",
             products: [
-                { id: "MG001", name: "Sunflower Microgreens", description: "Nutty flavor crunchy texture 30g pack", price: 120, availability: "In Stock" },
-                { id: "MG002", name: "Pea Shoot Microgreens", description: "Sweet pea flavor tender shoots 30g pack", price: 140, availability: "In Stock" },
-                { id: "MG003", name: "Radish Microgreens", description: "Spicy kick vibrant color 30g pack", price: 120, availability: "In Stock" },
-                { id: "MG004", name: "Broccoli Microgreens", description: "Mild broccoli flavor nutrient-dense 30g pack", price: 150, availability: "In Stock" },
-                { id: "MG005", name: "Mustard Microgreens", description: "Spicy mustard flavor 30g pack", price: 130, availability: "In Stock" }
+                { id: "MG001", name: "Sunflower Microgreens", description: "Nutty flavor crunchy texture 30g pack", price: 120, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?microgreens" },
+                { id: "MG002", name: "Pea Shoot Microgreens", description: "Sweet pea flavor tender shoots 30g pack", price: 140, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?microgreens" },
+                { id: "MG003", name: "Radish Microgreens", description: "Spicy kick vibrant color 30g pack", price: 120, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?microgreens" },
+                { id: "MG004", name: "Broccoli Microgreens", description: "Mild broccoli flavor nutrient-dense 30g pack", price: 150, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?microgreens" },
+                { id: "MG005", name: "Mustard Microgreens", description: "Spicy mustard flavor 30g pack", price: 130, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?microgreens" }
             ]
         },
         "Hydroponic Greens": {
             description: "Fresh leafy greens grown in our hydroponic system",
             image: "https://source.unsplash.com/300x200/?hydroponic",
             products: [
-                { id: "HG001", name: "Lettuce - Romaine", description: "Crisp sweet lettuce 100g pack", price: 80, availability: "In Stock" },
-                { id: "HG002", name: "Lettuce - Butterhead", description: "Soft buttery texture 100g pack", price: 90, availability: "In Stock" },
-                { id: "HG003", name: "Baby Spinach", description: "Tender spinach leaves 100g pack", price: 100, availability: "In Stock" },
-                { id: "HG004", name: "Kale Mix", description: "Assorted kale varieties 100g pack", price: 120, availability: "In Stock" },
-                { id: "HG005", name: "Swiss Chard", description: "Colorful stems earthy flavor 100g pack", price: 110, availability: "Out of Stock" }
+                { id: "HG001", name: "Lettuce - Romaine", description: "Crisp sweet lettuce 100g pack", price: 80, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?lettuce" },
+                { id: "HG002", name: "Lettuce - Butterhead", description: "Soft buttery texture 100g pack", price: 90, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?lettuce" },
+                { id: "HG003", name: "Baby Spinach", description: "Tender spinach leaves 100g pack", price: 100, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?spinach" },
+                { id: "HG004", name: "Kale Mix", description: "Assorted kale varieties 100g pack", price: 120, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?kale" },
+                { id: "HG005", name: "Swiss Chard", description: "Colorful stems earthy flavor 100g pack", price: 110, availability: "Out of Stock", imageUrl: "https://source.unsplash.com/300x200/?chard" }
             ]
         },
         "Fresh Herbs": {
             description: "Aromatic culinary herbs for cooking",
             image: "https://source.unsplash.com/300x200/?herbs",
             products: [
-                { id: "FH001", name: "Basil", description: "Fragrant Italian basil 30g bunch", price: 100, availability: "In Stock" },
-                { id: "FH002", name: "Mint", description: "Fresh cooling mint 30g bunch", price: 90, availability: "In Stock" },
-                { id: "FH003", name: "Coriander/Cilantro", description: "Aromatic herb 30g bunch", price: 80, availability: "In Stock" },
-                { id: "FH004", name: "Rosemary", description: "Woody aromatic sprigs 20g pack", price: 110, availability: "In Stock" },
-                { id: "FH005", name: "Thyme", description: "Delicate earthy herb 20g pack", price: 100, availability: "Out of Stock" }
+                { id: "FH001", name: "Basil", description: "Fragrant Italian basil 30g bunch", price: 100, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?basil" },
+                { id: "FH002", name: "Mint", description: "Fresh cooling mint 30g bunch", price: 90, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?mint" },
+                { id: "FH003", name: "Coriander/Cilantro", description: "Aromatic herb 30g bunch", price: 80, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?coriander" },
+                { id: "FH004", name: "Rosemary", description: "Woody aromatic sprigs 20g pack", price: 110, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?rosemary" },
+                { id: "FH005", name: "Thyme", description: "Delicate earthy herb 20g pack", price: 100, availability: "Out of Stock", imageUrl: "https://source.unsplash.com/300x200/?thyme" }
             ]
         },
         "Weekly Box": {
             description: "Curated boxes of fresh produce delivered weekly",
             image: "https://source.unsplash.com/300x200/?vegetable+box",
             products: [
-                { id: "WB001", name: "Small Weekly Box", description: "2 microgreens 2 leafy greens 1 herb", price: 450, availability: "In Stock" },
-                { id: "WB002", name: "Medium Weekly Box", description: "3 microgreens 3 leafy greens 2 herbs", price: 650, availability: "In Stock" },
-                { id: "WB003", name: "Large Weekly Box", description: "4 microgreens 4 leafy greens 3 herbs", price: 950, availability: "In Stock" },
-                { id: "WB004", name: "Family Box", description: "Double quantities of Medium box", price: 1200, availability: "In Stock" },
-                { id: "WB005", name: "Chef's Box", description: "Premium selection for restaurants", price: 1500, availability: "In Stock" }
+                { id: "WB001", name: "Small Weekly Box", description: "2 microgreens 2 leafy greens 1 herb", price: 450, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?vegetable+box" },
+                { id: "WB002", name: "Medium Weekly Box", description: "3 microgreens 3 leafy greens 2 herbs", price: 650, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?vegetable+box" },
+                { id: "WB003", name: "Large Weekly Box", description: "4 microgreens 4 leafy greens 3 herbs", price: 950, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?vegetable+box" },
+                { id: "WB004", name: "Family Box", description: "Double quantities of Medium box", price: 1200, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?vegetable+box" },
+                { id: "WB005", name: "Chef's Box", description: "Premium selection for restaurants", price: 1500, availability: "In Stock", imageUrl: "https://source.unsplash.com/300x200/?vegetable+box" }
             ]
         }
     };
