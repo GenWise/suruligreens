@@ -5,9 +5,10 @@
 </head>
 <body>
     <h1>Test Page</h1>
-    <p>This is a test page to check if GitHub Pages is working properly.</p>
+    <p>This is a test page to check if GitHub Pages is updating. Created at: <span id="timestamp"></span></p>
+    
     <script>
-        console.log("JavaScript is working!");
+        document.getElementById('timestamp').textContent = new Date().toISOString();
     </script>
 </body>
 </html> 
