@@ -2,7 +2,7 @@
 // This script fetches product data from a Google Sheet
 
 // Import configuration from config.js
-let SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+let SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCU'; // Corrected ID without the extra "E"
 let API_KEY = ''; // Optional: Only needed if sheet is not public
 
 // Try to get config from global config object if available

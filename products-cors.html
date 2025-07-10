@@ -70,7 +70,7 @@
         function fetchProductData() {
             log('Starting to fetch product data using JSONP approach');
             
-            const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+            const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCU'; // Corrected ID without the extra "E"
             const SHEET_NAME = 'Sheet1'; // Change this to your actual sheet name
             
             // Use the Google Visualization API Query Language
@@ -248,7 +248,7 @@
         function fetchProductDataCSV() {
             log('Starting to fetch product data as CSV');
             
-            const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+            const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCU'; // Corrected ID without the extra "E"
             const csvURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
             
             log('Fetching from URL', csvURL);
