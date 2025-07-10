@@ -3,7 +3,7 @@
 
 const config = {
     // Google Sheet Configuration
-    SHEET_ID: '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE',
+    SHEET_ID: 'YOUR_NEW_GOOGLE_SHEET_ID', // Replace this with your new Google Sheet ID
     API_KEY: '', // Only needed if sheet is not public
     
     // Contact Information
