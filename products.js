@@ -142,6 +142,17 @@ async function fetchCSVMethod() {
     const lines = text.split('\n');
     const headers = lines[0].split(',');
     
+    // Map header indices for flexibility in column order
+    const headerMap = {
+        id: headers.findIndex(h => h.toLowerCase().includes('product id')),
+        name: headers.findIndex(h => h.toLowerCase().includes('product name')),
+        category: headers.findIndex(h => h.toLowerCase().includes('category')),
+        description: headers.findIndex(h => h.toLowerCase().includes('description')),
+        price: headers.findIndex(h => h.toLowerCase().includes('price')),
+        availability: headers.findIndex(h => h.toLowerCase().includes('availability')),
+        imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
+    };
+    
     // Clear existing data
     productData = {};
     
@@ -151,13 +162,13 @@ async function fetchCSVMethod() {
         
         const values = lines[i].split(',');
         
-        const productId = values[0] || '';
-        const name = values[1] || '';
-        const category = values[2] || 'Uncategorized';
-        const description = values[3] || '';
-        const price = parseFloat(values[4]) || 0;
-        const availability = values[5] || 'In Stock';
-        const imageUrl = values[6] || ''; // Assuming image URL is in column 7
+        const productId = headerMap.id >= 0 ? values[headerMap.id] || '' : '';
+        const name = headerMap.name >= 0 ? values[headerMap.name] || '' : '';
+        const category = headerMap.category >= 0 ? values[headerMap.category] || 'Uncategorized' : 'Uncategorized';
+        const description = headerMap.description >= 0 ? values[headerMap.description] || '' : '';
+        const price = headerMap.price >= 0 ? parseFloat(values[headerMap.price]) || 0 : 0;
+        const availability = headerMap.availability >= 0 ? values[headerMap.availability] || 'In Stock' : 'In Stock';
+        const imageUrl = headerMap.imageUrl >= 0 ? values[headerMap.imageUrl] || '' : '';
         
         // Create category if it doesn't exist
         if (!productData[category]) {
@@ -179,11 +190,12 @@ async function fetchCSVMethod() {
         });
     }
     
+    console.log('Product data loaded successfully using CSV method:', productData);
+    
     // After processing, populate the UI
     populateProductCategories();
     setupProductCategoryEvents();
     
-    console.log('Product data loaded successfully using CSV method:', productData);
     return true;
 }
 
@@ -192,20 +204,33 @@ function processSheetData(tableData) {
     // Clear existing data
     productData = {};
     
+    // Get headers from the first row
+    const headers = tableData.rows[0].c.map(cell => cell?.v || '');
+    
+    // Map header indices for flexibility in column order
+    const headerMap = {
+        id: headers.findIndex(h => h.toLowerCase().includes('product id')),
+        name: headers.findIndex(h => h.toLowerCase().includes('product name')),
+        category: headers.findIndex(h => h.toLowerCase().includes('category')),
+        description: headers.findIndex(h => h.toLowerCase().includes('description')),
+        price: headers.findIndex(h => h.toLowerCase().includes('price')),
+        availability: headers.findIndex(h => h.toLowerCase().includes('availability')),
+        imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
+    };
+    
     // Skip the header row (row 0)
     for (let i = 1; i < tableData.rows.length; i++) {
         const row = tableData.rows[i].c;
         if (!row) continue;
         
-        // Extract data from each row
-        // Assuming columns are: Product ID, Name, Category, Description, Price, Availability, Image URL
-        const productId = row[0]?.v || '';
-        const name = row[1]?.v || '';
-        const category = row[2]?.v || 'Uncategorized';
-        const description = row[3]?.v || '';
-        const price = parseFloat(row[4]?.v) || 0;
-        const availability = row[5]?.v || 'In Stock';
-        const imageUrl = row[6]?.v || '';
+        // Extract data from each row using the header map
+        const productId = headerMap.id >= 0 ? row[headerMap.id]?.v || '' : '';
+        const name = headerMap.name >= 0 ? row[headerMap.name]?.v || '' : '';
+        const category = headerMap.category >= 0 ? row[headerMap.category]?.v || 'Uncategorized' : 'Uncategorized';
+        const description = headerMap.description >= 0 ? row[headerMap.description]?.v || '' : '';
+        const price = headerMap.price >= 0 ? parseFloat(row[headerMap.price]?.v) || 0 : 0;
+        const availability = headerMap.availability >= 0 ? row[headerMap.availability]?.v || 'In Stock' : 'In Stock';
+        const imageUrl = headerMap.imageUrl >= 0 ? row[headerMap.imageUrl]?.v || '' : '';
         
         // Create category if it doesn't exist
         if (!productData[category]) {
@@ -226,6 +251,8 @@ function processSheetData(tableData) {
             imageUrl: imageUrl || `https://source.unsplash.com/300x200/?${encodeURIComponent(name.toLowerCase())}`
         });
     }
+    
+    console.log('Sheet data processed successfully:', productData);
 }
 
 // Populate product categories in the grid
@@ -310,30 +337,38 @@ function showProductsModal(categoryName) {
     const productList = document.createElement('div');
     productList.classList.add('product-list');
     
-    // Add each product
-    category.products.forEach(product => {
-        const productItem = document.createElement('div');
-        productItem.classList.add('product-item');
-        
-        // Add availability badge
-        const availabilityClass = product.availability === 'In Stock' ? 'in-stock' : 'out-of-stock';
-        
-        productItem.innerHTML = `
-            <div class="product-item-image">
-                <img src="${product.imageUrl}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/100x100?text=${encodeURIComponent(product.name)}'">
-            </div>
-            <h4>${product.name}</h4>
-            <div class="product-item-description">${product.description}</div>
-            <div class="product-item-price">₹${product.price}</div>
-            <div class="product-item-availability ${availabilityClass}">${product.availability}</div>
-            ${product.availability === 'In Stock' ? 
-                `<button class="add-to-cart-btn" data-name="${product.name}" data-price="${product.price}">Add to Cart</button>` : 
-                `<button class="add-to-cart-btn disabled" disabled>Out of Stock</button>`
-            }
-        `;
-        
-        productList.appendChild(productItem);
-    });
+    // Check if we have products in this category
+    if (!category.products || category.products.length === 0) {
+        productList.innerHTML = '<div class="no-products">No products available in this category</div>';
+    } else {
+        // Add each product
+        category.products.forEach(product => {
+            const productItem = document.createElement('div');
+            productItem.classList.add('product-item');
+            
+            // Add availability badge
+            const availabilityClass = product.availability === 'In Stock' ? 'in-stock' : 'out-of-stock';
+            
+            // Use product image if available, otherwise generate one
+            const imageUrl = product.imageUrl || `https://source.unsplash.com/300x200/?${encodeURIComponent(product.name.toLowerCase())}`;
+            
+            productItem.innerHTML = `
+                <div class="product-item-image">
+                    <img src="${imageUrl}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/100x100?text=${encodeURIComponent(product.name)}'">
+                </div>
+                <h4>${product.name}</h4>
+                <div class="product-item-description">${product.description}</div>
+                <div class="product-item-price">₹${product.price}</div>
+                <div class="product-item-availability ${availabilityClass}">${product.availability}</div>
+                ${product.availability === 'In Stock' ? 
+                    `<button class="add-to-cart-btn" data-name="${product.name}" data-price="${product.price}">Add to Cart</button>` : 
+                    `<button class="add-to-cart-btn disabled" disabled>Out of Stock</button>`
+                }
+            `;
+            
+            productList.appendChild(productItem);
+        });
+    }
     
     productModalBody.appendChild(productList);
     
