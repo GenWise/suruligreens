@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Sheet Access Test</title>
+</head>
+<body>
+    <h1>Google Sheet Access Test</h1>
+    <p>This page tests if the Google Sheet is accessible.</p>
+    
+    <button id="test-direct">Test Direct Method</button>
+    <button id="test-jsonp">Test JSONP Method</button>
+    <button id="test-csv">Test CSV Method</button>
+    
+    <pre id="result" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border: 1px solid #ddd;"></pre>
+    
+    <script>
+        const SHEET_ID = '17OUHOS-Xhqmto_67ZbLMbWNnI7LgoDXswb3VwOvbkCUE';
+        const resultDiv = document.getElementById('result');
+        
+        function log(message) {
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            resultDiv.textContent += `[${timestamp}] ${message}\n`;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // Test direct method
+        document.getElementById('test-direct').addEventListener('click', async function() {
+            log('Testing direct method...');
+            resultDiv.textContent = ''; // Clear previous results
+            
+            try {
+                const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+                log(`Fetching from: ${sheetURL}`);
+                
+                const response = await fetch(sheetURL);
+                log(`Response status: ${response.status}`);
+                
+                const text = await response.text();
+                log(`Response length: ${text.length} characters`);
+                
+                // Try to extract and parse JSON
+                const jsonStart = text.indexOf('{');
+                const jsonEnd = text.lastIndexOf('}') + 1;
+                
+                if (jsonStart >= 0 && jsonEnd > 0) {
+                    const jsonText = text.substring(jsonStart, jsonEnd);
+                    log(`JSON extracted (${jsonText.length} characters)`);
+                    
+                    try {
+                        const data = JSON.parse(jsonText);
+                        log('JSON parsed successfully!');
+                        log(`Data contains: ${Object.keys(data).join(', ')}`);
+                        
+                        if (data.table && data.table.rows) {
+                            log(`Found ${data.table.rows.length} rows of data`);
+                            log('Direct method works! ✅');
+                        } else {
+                            log('No rows found in the data');
+                        }
+                    } catch (parseError) {
+                        log(`Error parsing JSON: ${parseError.message}`);
+                    }
+                } else {
+                    log('Could not find JSON in response');
+                }
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        });
+        
+        // Test JSONP method
+        document.getElementById('test-jsonp').addEventListener('click', function() {
+            log('Testing JSONP method...');
+            resultDiv.textContent = ''; // Clear previous results
+            
+            const SHEET_NAME = 'Sheet1';
+            const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}&tq=SELECT%20*`;
+            log(`Loading script from: ${sheetURL}`);
+            
+            // Create a script element
+            const script = document.createElement('script');
+            script.src = sheetURL;
+            
+            // Set a timeout
+            const timeout = setTimeout(() => {
+                log('Request timed out after 10 seconds');
+                cleanup();
+            }, 10000);
+            
+            // Cleanup function
+            const cleanup = () => {
+                delete window.google;
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+                clearTimeout(timeout);
+            };
+            
+            // Define the callback
+            window.google = {
+                visualization: {
+                    Query: {
+                        setResponse: function(response) {
+                            log('Received response from Google Sheets!');
+                            
+                            try {
+                                if (response && response.table) {
+                                    log(`Found table with ${response.table.rows.length} rows`);
+                                    log('JSONP method works! ✅');
+                                } else {
+                                    log('No table found in response');
+                                }
+                            } catch (error) {
+                                log(`Error processing response: ${error.message}`);
+                            } finally {
+                                cleanup();
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // Handle errors
+            script.onerror = function() {
+                log('Error loading script');
+                cleanup();
+            };
+            
+            // Add the script to the page
+            document.body.appendChild(script);
+        });
+        
+        // Test CSV method
+        document.getElementById('test-csv').addEventListener('click', async function() {
+            log('Testing CSV method...');
+            resultDiv.textContent = ''; // Clear previous results
+            
+            try {
+                const csvURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+                log(`Fetching from: ${csvURL}`);
+                
+                const response = await fetch(csvURL);
+                log(`Response status: ${response.status}`);
+                
+                const text = await response.text();
+                log(`Response length: ${text.length} characters`);
+                
+                // Parse CSV
+                const lines = text.split('\n');
+                log(`Found ${lines.length} lines`);
+                
+                if (lines.length > 0) {
+                    const headers = lines[0].split(',');
+                    log(`Headers: ${headers.join(', ')}`);
+                    
+                    if (lines.length > 1) {
+                        log(`First data row: ${lines[1]}`);
+                        log('CSV method works! ✅');
+                    } else {
+                        log('No data rows found');
+                    }
+                } else {
+                    log('No lines found in CSV');
+                }
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        });
+        
+        // Initial message
+        log('Click a button to test Google Sheet access');
+    </script>
+</body>
+</html> 
