@@ -18,28 +18,28 @@ let productData = {};
 async function fetchProductData() {
     console.log('Fetching product data...');
     
+    // Prefer JSONP first to avoid GViz JSON parsing issues
     try {
-        // First try the direct approach
+        await fetchJSONPMethod();
+        return;
+    } catch (jsonpError) {
+        console.error('JSONP method failed:', jsonpError);
+    }
+
+    // Fallback to CSV (works without JSONP and avoids CORS in many cases)
+    try {
+        await fetchCSVMethod();
+        return;
+    } catch (csvError) {
+        console.error('CSV method failed:', csvError);
+    }
+
+    // Last resort: attempt direct method
+    try {
         await fetchDirectMethod();
     } catch (error) {
         console.error('Direct method failed:', error);
-        
-        // If direct method fails, try JSONP approach
-        try {
-            await fetchJSONPMethod();
-        } catch (jsonpError) {
-            console.error('JSONP method failed:', jsonpError);
-            
-            // If JSONP fails, try CSV approach
-            try {
-                await fetchCSVMethod();
-            } catch (csvError) {
-                console.error('CSV method failed:', csvError);
-                
-                // If all methods fail, load sample data
-                loadSampleData();
-            }
-        }
+        loadSampleData();
     }
 }
 
@@ -67,46 +67,37 @@ async function fetchDirectMethod() {
 }
 
 // JSONP method (avoids CORS issues)
-function fetchJSONPMethod() {
-    console.log('Trying JSONP method...');
-    
+function fetchGVizSheetJSONP(sheetName) {
     return new Promise((resolve, reject) => {
-        const SHEET_NAME = 'Sheet1'; // Change this to your actual sheet name
-        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}&tq=SELECT%20*`;
-        
-        // Create a script element to load the data
+        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=SELECT%20*`;
         const script = document.createElement('script');
         script.src = sheetURL;
-        
-        // Set a timeout to reject the promise if it takes too long
+        const prevGoogle = window.google;
         const timeout = setTimeout(() => {
-            reject(new Error('JSONP request timed out'));
+            reject(new Error(`JSONP request timed out for ${sheetName}`));
             cleanup();
         }, 10000);
-        
-        // Function to clean up after the request
-        const cleanup = () => {
-            delete window.google;
-            document.body.removeChild(script);
+        function cleanup() {
+            try { document.body.removeChild(script); } catch (_) {}
             clearTimeout(timeout);
-        };
-        
-        // When the script loads, Google will call the google.visualization.Query.setResponse function
-            window.google = {
+            // Restore previous google if any
+            if (prevGoogle) {
+                window.google = prevGoogle;
+            } else {
+                try { delete window.google; } catch (_) { window.google = undefined; }
+            }
+        }
+        window.google = {
             visualization: {
                 Query: {
                     setResponse: function(response) {
                         try {
-                            // Process the data
-                            processSheetData(response.table);
-                            
-                            // Merge category metadata and then populate UI
-                            finalizeProductsLoad().then(() => {
-                                console.log('Product data loaded successfully using JSONP method:', productData);
-                                resolve(true);
-                            }).catch(err => reject(err));
-                        } catch (error) {
-                            reject(error);
+                            if (!response || !response.table) {
+                                throw new Error('Invalid GViz response');
+                            }
+                            resolve(response.table);
+                        } catch (err) {
+                            reject(err);
                         } finally {
                             cleanup();
                         }
@@ -114,15 +105,19 @@ function fetchJSONPMethod() {
                 }
             }
         };
-        
-        // Add error handling
         script.onerror = function() {
-            reject(new Error('Error loading Google Sheets data via JSONP'));
+            reject(new Error(`Error loading GViz JSONP for ${sheetName}`));
             cleanup();
         };
-        
-        // Add the script to the page
         document.body.appendChild(script);
+    });
+}
+
+function fetchJSONPMethod() {
+    console.log('Trying JSONP method...');
+    return fetchGVizSheetJSONP('Sheet1').then(table => {
+        processSheetData(table);
+        return finalizeProductsLoad().then(() => true);
     });
 }
 
@@ -256,14 +251,8 @@ function processSheetData(tableData) {
 
 // Fetch optional Categories sheet metadata and merge into productData
 async function fetchCategoriesMeta() {
-    // Try GViz JSON for a sheet named "Categories"
-    const categoriesUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Categories`;
-    const response = await fetch(categoriesUrl);
-    const text = await response.text();
-    if (!text.includes('{')) return {};
-    const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-    const data = JSON.parse(jsonText);
-    const table = data.table;
+    // Use JSONP to load the Categories sheet
+    const table = await fetchGVizSheetJSONP('Categories');
     if (!table || !table.rows || table.rows.length === 0) return {};
     // Headers from column labels
     const headers = (table.cols || []).map(col => String((col && col.label != null) ? col.label : ''));
