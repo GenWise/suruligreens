@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A3A2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Suruli Greens - Order Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --dark-green: #1A3A2A;
+        --light-green: #7DA95A;
+        --cream: #F5F1E3;
+        --tan: #D9CBA3;
+        --brown: #A67C39;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: var(--cream);
+        color: var(--dark-green);
+        padding: 0;
+        margin: 0;
+    }
+    
+    header {
+        background-color: var(--dark-green);
+        color: var(--cream);
+        padding: 15px;
+        text-align: center;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .logo {
+        font-size: 20px;
+        font-weight: 700;
+    }
+    
+    .refresh-btn {
+        background-color: var(--light-green);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .container {
+        max-width: 800px;
+        margin: 80px auto 20px;
+        padding: 15px;
+    }
+    
+    .dashboard-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background-color: var(--light-green);
+        color: white;
+        padding: 15px;
+        font-weight: 600;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .stat-box {
+        background-color: var(--cream);
+        border-radius: 5px;
+        padding: 15px;
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--brown);
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: var(--dark-green);
+        font-weight: 500;
+    }
+    
+    .category-list, .order-list {
+        list-style: none;
+    }
+    
+    .category-item, .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .category-name, .order-id {
+        font-weight: 600;
+    }
+    
+    .category-count, .order-amount {
+        color: var(--brown);
+        font-weight: 600;
+    }
+    
+    .order-details {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .order-status {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-top: 5px;
+    }
+    
+    .status-pending {
+        background-color: #FFC107;
+        color: #333;
+    }
+    
+    .status-paid {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+    .status-fulfilled {
+        background-color: #2196F3;
+        color: white;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .action-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .mark-paid-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+    .mark-fulfilled-btn {
+        background-color: #2196F3;
+        color: white;
+    }
+    
+    .tabs {
+        display: flex;
+        margin-bottom: 15px;
+    }
+    
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    
+    .tab.active {
+        background-color: var(--light-green);
+        color: white;
+        font-weight: 600;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 30px;
+        color: #999;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 30px;
+        color: #666;
+    }
+    
+    .error {
+        background-color: #ffebee;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    
+    /* Footer */
+    footer {
+        background-color: var(--dark-green);
+        color: var(--cream);
+        text-align: center;
+        padding: 15px;
+        font-size: 12px;
+        margin-top: 20px;
+    }
+    
+    @media (max-width: 480px) {
+        .summary-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .container {
+            padding: 10px;
+        }
+        
+        .card-header, .card-body {
+            padding: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">Suruli Greens Dashboard</div>
+            <button id="refreshBtn" class="refresh-btn">Refresh</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div class="dashboard-card">
+            <div class="card-header">Order Summary</div>
+            <div class="card-body">
+                <div class="summary-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalOrders">--</div>
+                        <div class="stat-label">Unfulfilled Orders</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalRevenue">--</div>
+                        <div class="stat-label">Total Value</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="card-header">Orders by Category</div>
+            <div class="card-body">
+                <div id="categoryLoading" class="loading">Loading...</div>
+                <ul id="categoryList" class="category-list" style="display: none;"></ul>
+                <div id="categoryEmpty" class="empty-state" style="display: none;">
+                    No unfulfilled orders by category
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="card-header">Recent Orders</div>
+            <div class="card-body">
+                <div class="tabs">
+                    <div class="tab active" data-tab="all">All</div>
+                    <div class="tab" data-tab="pending">Pending</div>
+                    <div class="tab" data-tab="paid">Paid</div>
+                </div>
+                
+                <div id="ordersLoading" class="loading">Loading...</div>
+                <div id="ordersAll" class="tab-content active">
+                    <ul id="ordersList" class="order-list"></ul>
+                    <div id="ordersEmpty" class="empty-state" style="display: none;">
+                        No orders to display
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer id="deliveryInfo">Pick up your order at the Edina Lobby, at 6pm on Tuesdays or Fridays</footer>
+    
+    <script src="config.js"></script>
+    <script>
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const totalOrdersEl = document.getElementById('totalOrders');
+            const totalRevenueEl = document.getElementById('totalRevenue');
+            const categoryListEl = document.getElementById('categoryList');
+            const ordersListEl = document.getElementById('ordersList');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const errorEl = document.getElementById('error');
+            
+            // Loading states
+            const categoryLoadingEl = document.getElementById('categoryLoading');
+            const ordersLoadingEl = document.getElementById('ordersLoading');
+            
+            // Empty states
+            const categoryEmptyEl = document.getElementById('categoryEmpty');
+            const ordersEmptyEl = document.getElementById('ordersEmpty');
+            
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Filter orders based on tab
+                    const tabType = this.dataset.tab;
+                    filterOrders(tabType);
+                });
+            });
+            
+            // Google Apps Script Web App URL
+            const scriptUrl = config.GOOGLE_SCRIPT_URL || '';
+            
+            // Load delivery config for footer
+            loadDeliveryConfig();
+
+            // Load dashboard data
+            loadDashboardData();
+            
+            // Refresh button
+            refreshBtn.addEventListener('click', loadDashboardData);
+            
+            // Load dashboard data from Google Apps Script
+            function loadDashboardData() {
+                // Show loading states
+                categoryLoadingEl.style.display = 'block';
+                categoryListEl.style.display = 'none';
+                categoryEmptyEl.style.display = 'none';
+                
+                ordersLoadingEl.style.display = 'block';
+                ordersListEl.innerHTML = '';
+                ordersEmptyEl.style.display = 'none';
+                
+                // Clear error
+                errorEl.style.display = 'none';
+                
+                // Fetch data from Google Apps Script
+                fetch(`${scriptUrl}?action=dashboard`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateDashboard(data.data);
+                        } else {
+                            showError(data.error || 'Failed to load dashboard data');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading dashboard:', error);
+                        showError('Failed to connect to the server. Please check your internet connection and try again.');
+                        
+                        // For demo/development, load sample data
+                        loadSampleData();
+                    });
+            }
+            
+            // Update dashboard with data
+            function updateDashboard(data) {
+                // Update summary stats
+                totalOrdersEl.textContent = data.totalUnfulfilledOrders || 0;
+                
+                // Calculate total revenue
+                const totalRevenue = data.orders.reduce((sum, order) => sum + order.totalAmount, 0);
+                totalRevenueEl.textContent = `₹${totalRevenue}`;
+                
+                // Update categories
+                updateCategories(data.categoryCounts);
+                
+                // Update orders
+                updateOrders(data.orders);
+                
+                // Hide loading states
+                categoryLoadingEl.style.display = 'none';
+                ordersLoadingEl.style.display = 'none';
+            }
+            
+            // Update categories list
+            function updateCategories(categoryCounts) {
+                // Clear current list
+                categoryListEl.innerHTML = '';
+                
+                // Check if we have categories
+                const categories = Object.keys(categoryCounts);
+                
+                if (categories.length === 0) {
+                    categoryEmptyEl.style.display = 'block';
+                    return;
+                }
+                
+                // Sort categories by count (descending)
+                categories.sort((a, b) => categoryCounts[b] - categoryCounts[a]);
+                
+                // Add each category
+                categories.forEach(category => {
+                    const li = document.createElement('li');
+                    li.className = 'category-item';
+                    li.innerHTML = `
+                        <span class="category-name">${category}</span>
+                        <span class="category-count">${categoryCounts[category]}</span>
+                    `;
+                    categoryListEl.appendChild(li);
+                });
+                
+                // Show the list
+                categoryListEl.style.display = 'block';
+            }
+            
+            // Update orders list
+            function updateOrders(orders) {
+                // Clear current list
+                ordersListEl.innerHTML = '';
+                
+                // Check if we have orders
+                if (!orders || orders.length === 0) {
+                    ordersEmptyEl.style.display = 'block';
+                    return;
+                }
+                
+                // Sort orders by date (newest first)
+                orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+                
+                // Add each order
+                orders.forEach(order => {
+                    const li = document.createElement('li');
+                    li.className = 'order-item';
+                    li.dataset.status = order.status.toLowerCase();
+                    
+                    // Format date
+                    const orderDate = new Date(order.orderDate);
+                    const formattedDate = orderDate.toLocaleDateString() + ' ' + 
+                                         orderDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    // Format delivery date
+                    const deliveryDate = new Date(order.deliveryDate);
+                    const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    // Get status class
+                    const statusClass = `status-${order.status.toLowerCase()}`;
+                    
+                    // Create item HTML
+                    li.innerHTML = `
+                        <div>
+                            <div class="order-id">${order.orderId}</div>
+                            <div class="order-details">
+                                Customer: ${order.customerId}<br>
+                                Date: ${formattedDate}<br>
+                                Delivery: ${formattedDeliveryDate}
+                            </div>
+                            <span class="order-status ${statusClass}">${order.status}</span>
+                            <div class="action-buttons">
+                                ${order.status === 'Pending' ? 
+                                    `<button class="action-btn mark-paid-btn" data-order-id="${order.orderId}">Mark Paid</button>` : ''}
+                                ${order.status === 'Paid' ? 
+                                    `<button class="action-btn mark-fulfilled-btn" data-order-id="${order.orderId}">Mark Fulfilled</button>` : ''}
+                            </div>
+                        </div>
+                        <div class="order-amount">₹${order.totalAmount}</div>
+                    `;
+                    
+                    ordersListEl.appendChild(li);
+                });
+                
+                // Add event listeners to action buttons
+                const markPaidBtns = document.querySelectorAll('.mark-paid-btn');
+                markPaidBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const orderId = this.dataset.orderId;
+                        updateOrderStatus(orderId, 'Paid');
+                    });
+                });
+                
+                const markFulfilledBtns = document.querySelectorAll('.mark-fulfilled-btn');
+                markFulfilledBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const orderId = this.dataset.orderId;
+                        updateOrderStatus(orderId, 'Fulfilled');
+                    });
+                });
+                
+                // Filter orders based on active tab
+                const activeTab = document.querySelector('.tab.active');
+                if (activeTab) {
+                    filterOrders(activeTab.dataset.tab);
+                }
+            }
+            
+            // Filter orders based on tab
+            function filterOrders(tabType) {
+                const orderItems = document.querySelectorAll('.order-item');
+                
+                orderItems.forEach(item => {
+                    if (tabType === 'all' || item.dataset.status === tabType) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Check if we have any visible orders
+                const visibleOrders = Array.from(orderItems).filter(
+                    item => item.style.display !== 'none'
+                );
+                
+                if (visibleOrders.length === 0) {
+                    ordersEmptyEl.style.display = 'block';
+                } else {
+                    ordersEmptyEl.style.display = 'none';
+                }
+            }
+            
+            // Update order status
+            function updateOrderStatus(orderId, status) {
+                // Show loading
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = 'Updating...';
+                
+                // Send update to Google Apps Script
+                fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'update_order_status',
+                        orderId: orderId,
+                        status: status
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload dashboard data
+                        loadDashboardData();
+                    } else {
+                        showError(data.error || 'Failed to update order status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating order status:', error);
+                    showError('Failed to update order status. Please try again.');
+                })
+                .finally(() => {
+                    // Reset button
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = 'Refresh';
+                });
+            }
+            
+            // Show error message
+            function showError(message) {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+                
+                // Hide loading states
+                categoryLoadingEl.style.display = 'none';
+                ordersLoadingEl.style.display = 'none';
+            }
+            
+            // Load sample data for development/demo
+            function loadSampleData() {
+                const sampleData = {
+                    totalUnfulfilledOrders: 5,
+                    categoryCounts: {
+                        "Fresh Microgreens": 12,
+                        "Hydroponic Greens": 8,
+                        "Fresh Herbs": 5,
+                        "Weekly Box": 2
+                    },
+                    itemCounts: {
+                        "Fresh Microgreens:Sunflower Microgreens": 5,
+                        "Fresh Microgreens:Pea Shoot Microgreens": 3,
+                        "Fresh Microgreens:Radish Microgreens": 4,
+                        "Hydroponic Greens:Lettuce - Romaine": 3,
+                        "Hydroponic Greens:Baby Spinach": 5,
+                        "Fresh Herbs:Basil": 3,
+                        "Fresh Herbs:Mint": 2,
+                        "Weekly Box:Small Weekly Box": 1,
+                        "Weekly Box:Medium Weekly Box": 1
+                    },
+                    orders: [
+                        {
+                            orderId: "ORD123456",
+                            customerId: "9198765432",
+                            orderDate: new Date(Date.now() - 3600000).toISOString(),
+                            items: [
+                                {name: "Sunflower Microgreens", category: "Fresh Microgreens", quantity: 2, price: 120},
+                                {name: "Baby Spinach", category: "Hydroponic Greens", quantity: 1, price: 100}
+                            ],
+                            totalAmount: 340,
+                            deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString(),
+                            status: "Pending"
+                        },
+                        {
+                            orderId: "ORD123455",
+                            customerId: "9198765431",
+                            orderDate: new Date(Date.now() - 7200000).toISOString(),
+                            items: [
+                                {name: "Medium Weekly Box", category: "Weekly Box", quantity: 1, price: 650}
+                            ],
+                            totalAmount: 650,
+                            deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString(),
+                            status: "Paid"
+                        },
+                        {
+                            orderId: "ORD123454",
+                            customerId: "9198765430",
+                            orderDate: new Date(Date.now() - 10800000).toISOString(),
+                            items: [
+                                {name: "Basil", category: "Fresh Herbs", quantity: 2, price: 100},
+                                {name: "Mint", category: "Fresh Herbs", quantity: 1, price: 90},
+                                {name: "Radish Microgreens", category: "Fresh Microgreens", quantity: 1, price: 120}
+                            ],
+                            totalAmount: 410,
+                            deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString(),
+                            status: "Pending"
+                        },
+                        {
+                            orderId: "ORD123453",
+                            customerId: "9198765429",
+                            orderDate: new Date(Date.now() - 14400000).toISOString(),
+                            items: [
+                                {name: "Lettuce - Romaine", category: "Hydroponic Greens", quantity: 2, price: 80},
+                                {name: "Pea Shoot Microgreens", category: "Fresh Microgreens", quantity: 1, price: 140}
+                            ],
+                            totalAmount: 300,
+                            deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString(),
+                            status: "Paid"
+                        },
+                        {
+                            orderId: "ORD123452",
+                            customerId: "9198765428",
+                            orderDate: new Date(Date.now() - 18000000).toISOString(),
+                            items: [
+                                {name: "Small Weekly Box", category: "Weekly Box", quantity: 1, price: 450}
+                            ],
+                            totalAmount: 450,
+                            deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString(),
+                            status: "Pending"
+                        }
+                    ]
+                };
+                
+                updateDashboard(sampleData);
+            }
+        });
+
+        // Fetch delivery config from Google Apps Script and update footer
+        function loadDeliveryConfig() {
+            const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
+            const infoEl = document.getElementById('deliveryInfo');
+            if (!infoEl) return;
+            if (!scriptUrl) return; // keep default text when not configured
+            fetch(`${scriptUrl}?action=config`).then(r=>r.json()).then(data=>{
+                if (!data.success) return;
+                const cfg = data.config;
+                const days = (cfg.deliveryDayNames || []).join(' or ');
+                const time = cfg.deliveryTime || '6:00 PM';
+                const loc = cfg.deliveryLocation || 'Edina Lobby';
+                infoEl.textContent = `Pick up your order at the ${loc}, at ${time} on ${days}`;
+            }).catch(()=>{});
+        }
+    </script>
+</body>
+</html> 

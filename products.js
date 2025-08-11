@@ -60,10 +60,8 @@ async function fetchDirectMethod() {
     // Process the data into our structure
     processSheetData(data.table);
     
-    // After processing, populate the UI
-    populateProductCategories();
-    setupProductCategoryEvents();
-    
+    // Merge category metadata and then populate UI
+    await finalizeProductsLoad();
     console.log('Product data loaded successfully using direct method:', productData);
     return true;
 }
@@ -94,7 +92,7 @@ function fetchJSONPMethod() {
         };
         
         // When the script loads, Google will call the google.visualization.Query.setResponse function
-        window.google = {
+            window.google = {
             visualization: {
                 Query: {
                     setResponse: function(response) {
@@ -102,12 +100,11 @@ function fetchJSONPMethod() {
                             // Process the data
                             processSheetData(response.table);
                             
-                            // After processing, populate the UI
-                            populateProductCategories();
-                            setupProductCategoryEvents();
-                            
-                            console.log('Product data loaded successfully using JSONP method:', productData);
-                            resolve(true);
+                            // Merge category metadata and then populate UI
+                            finalizeProductsLoad().then(() => {
+                                console.log('Product data loaded successfully using JSONP method:', productData);
+                                resolve(true);
+                            }).catch(err => reject(err));
                         } catch (error) {
                             reject(error);
                         } finally {
@@ -192,10 +189,8 @@ async function fetchCSVMethod() {
     
     console.log('Product data loaded successfully using CSV method:', productData);
     
-    // After processing, populate the UI
-    populateProductCategories();
-    setupProductCategoryEvents();
-    
+    // Merge category metadata and then populate the UI
+    await finalizeProductsLoad();
     return true;
 }
 
@@ -204,8 +199,11 @@ function processSheetData(tableData) {
     // Clear existing data
     productData = {};
     
-    // Get headers from the first row
-    const headers = tableData.rows[0].c.map(cell => cell?.v || '');
+    // Get headers from table column labels (GViz puts headers in cols)
+    const headers = (tableData.cols || []).map(col => {
+        const label = (col && (col.label != null)) ? col.label : '';
+        return String(label);
+    });
     
     // Map header indices for flexibility in column order
     const headerMap = {
@@ -218,19 +216,20 @@ function processSheetData(tableData) {
         imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
     };
     
-    // Skip the header row (row 0)
-    for (let i = 1; i < tableData.rows.length; i++) {
+    // Iterate all data rows
+    for (let i = 0; i < tableData.rows.length; i++) {
         const row = tableData.rows[i].c;
         if (!row) continue;
         
         // Extract data from each row using the header map
-        const productId = headerMap.id >= 0 ? row[headerMap.id]?.v || '' : '';
-        const name = headerMap.name >= 0 ? row[headerMap.name]?.v || '' : '';
-        const category = headerMap.category >= 0 ? row[headerMap.category]?.v || 'Uncategorized' : 'Uncategorized';
-        const description = headerMap.description >= 0 ? row[headerMap.description]?.v || '' : '';
-        const price = headerMap.price >= 0 ? parseFloat(row[headerMap.price]?.v) || 0 : 0;
-        const availability = headerMap.availability >= 0 ? row[headerMap.availability]?.v || 'In Stock' : 'In Stock';
-        const imageUrl = headerMap.imageUrl >= 0 ? row[headerMap.imageUrl]?.v || '' : '';
+        const productId = headerMap.id >= 0 ? (row[headerMap.id] && row[headerMap.id].v != null ? row[headerMap.id].v : '') : '';
+        const name = headerMap.name >= 0 ? String(row[headerMap.name] && row[headerMap.name].v != null ? row[headerMap.name].v : '').trim() : '';
+        let category = headerMap.category >= 0 ? (row[headerMap.category] && row[headerMap.category].v != null ? row[headerMap.category].v : 'Uncategorized') : 'Uncategorized';
+        category = String(category === null || category === undefined ? 'Uncategorized' : category).trim();
+        const description = headerMap.description >= 0 ? String(row[headerMap.description] && row[headerMap.description].v != null ? row[headerMap.description].v : '').trim() : '';
+        const price = headerMap.price >= 0 ? parseFloat(row[headerMap.price] && row[headerMap.price].v != null ? row[headerMap.price].v : 0) || 0 : 0;
+        const availability = headerMap.availability >= 0 ? String(row[headerMap.availability] && row[headerMap.availability].v != null ? row[headerMap.availability].v : 'In Stock') : 'In Stock';
+        const imageUrl = headerMap.imageUrl >= 0 ? String(row[headerMap.imageUrl] && row[headerMap.imageUrl].v != null ? row[headerMap.imageUrl].v : '').trim() : '';
         
         // Create category if it doesn't exist
         if (!productData[category]) {
@@ -253,6 +252,82 @@ function processSheetData(tableData) {
     }
     
     console.log('Sheet data processed successfully:', productData);
+}
+
+// Fetch optional Categories sheet metadata and merge into productData
+async function fetchCategoriesMeta() {
+    // Try GViz JSON for a sheet named "Categories"
+    const categoriesUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Categories`;
+    const response = await fetch(categoriesUrl);
+    const text = await response.text();
+    if (!text.includes('{')) return {};
+    const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+    const data = JSON.parse(jsonText);
+    const table = data.table;
+    if (!table || !table.rows || table.rows.length === 0) return {};
+    // Headers from column labels
+    const headers = (table.cols || []).map(col => String((col && col.label != null) ? col.label : ''));
+    const headerMap = {
+        category: headers.findIndex(h => h.toLowerCase().includes('category')),
+        description: headers.findIndex(h => h.toLowerCase().includes('description')),
+        imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
+    };
+    const meta = {};
+    for (let i = 0; i < table.rows.length; i++) {
+        const row = table.rows[i].c;
+        if (!row) continue;
+        const name = headerMap.category >= 0 ? String(row[headerMap.category] && row[headerMap.category].v != null ? row[headerMap.category].v : '').trim() : '';
+        if (!name) continue;
+        const description = headerMap.description >= 0 ? String(row[headerMap.description] && row[headerMap.description].v != null ? row[headerMap.description].v : '').trim() : '';
+        const imageUrl = headerMap.imageUrl >= 0 ? String(row[headerMap.imageUrl] && row[headerMap.imageUrl].v != null ? row[headerMap.imageUrl].v : '').trim() : '';
+        meta[normalizeName(name)] = { description, image: imageUrl };
+    }
+    return meta;
+}
+
+async function finalizeProductsLoad() {
+    try {
+        const categoriesMeta = await fetchCategoriesMeta();
+        // Merge (case-insensitive, trimmed)
+        for (const categoryName in productData) {
+            const key = normalizeName(categoryName);
+            if (categoriesMeta[key]) {
+                const meta = categoriesMeta[key];
+                if (meta.description) {
+                    productData[categoryName].description = meta.description;
+                }
+                if (meta.image) {
+                    productData[categoryName].image = toAbsoluteUrl(meta.image);
+                }
+            }
+        }
+    } catch (_) {
+        // Ignore metadata failures; proceed with defaults
+    }
+    populateProductCategories();
+    setupProductCategoryEvents();
+}
+
+function normalizeName(name) {
+    return String(name || '').trim().toLowerCase();
+}
+
+function toAbsoluteUrl(url) {
+    if (!url) return url;
+    if (/^https?:\/\//i.test(url)) return url;
+    // Use config.SITE_URL if available, else derive from current location
+    let base = '';
+    try {
+        if (typeof config !== 'undefined' && config.SITE_URL) {
+            base = String(config.SITE_URL).replace(/\/?$/,'');
+        } else if (typeof window !== 'undefined') {
+            const loc = window.location;
+            // Strip filename from pathname
+            const pathBase = loc.pathname.replace(/\/[^/]*$/, '');
+            base = `${loc.origin}${pathBase}`.replace(/\/?$/,'');
+        }
+    } catch (_) {}
+    return `${base}/${String(url).replace(/^\/+/, '')}`;
 }
 
 // Populate product categories in the grid

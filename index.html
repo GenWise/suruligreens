@@ -1389,6 +1389,9 @@
                     <p>Delivery zones: Chennai city limits</p>
                 </div>
             </div>
+            <div id="deliveryInfo" style="text-align: center; margin: 20px 0; padding: 15px; background-color: var(--light-green); color: white; border-radius: 5px; font-weight: bold;">
+                Pick up your order at the Edina Lobby, at 6pm on Tuesdays or Fridays
+            </div>
             <div class="copyright">
                 <p>&copy; 2023 Suruli Greens. All rights reserved.</p>
             </div>
@@ -1452,6 +1455,8 @@
     <script src="products.js"></script>
     <script src="debug.js"></script>
     
+    <script src="config.js"></script>
+    <script src="whatsapp_mcp_integration.js"></script>
     <script>
         // Shopping cart functionality
         let cart = [];
@@ -1605,10 +1610,22 @@
         }
         
         // Send cart to WhatsApp
+        let isCheckingOut = false;
+
         function sendCartToWhatsApp() {
-            if (cart.length === 0) {
+            if (cart.length === 0 || isCheckingOut) {
                 alert("Your cart is empty. Please add some items first.");
                 return;
+            }
+            // Guard and close the cart immediately to avoid lingering UI
+            isCheckingOut = true;
+            const originalCheckoutText = checkoutBtn ? checkoutBtn.textContent : '';
+            if (checkoutBtn) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.textContent = 'Processing...';
+            }
+            if (cartModal) {
+                cartModal.style.display = 'none';
             }
             
             // Format the order for WhatsApp
@@ -1632,22 +1649,31 @@
             
             // Open WhatsApp with the pre-filled message
             window.open(whatsappUrl, "_blank");
-            
+
             // Send data to the MCP server
             sendToMCPServer(cart);
-            
-            // Close the modal
-            cartModal.style.display = 'none';
+
+            // Clear the cart deterministically and update UI
+            cart = [];
+            updateCartCount();
+            updateCartDisplay();
+
+            // Show confirmation notification
             showNotification('Your order has been received! You will receive a confirmation on WhatsApp shortly.');
+
+            // Reset button state after brief delay
+            setTimeout(() => {
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.textContent = originalCheckoutText || 'Order via WhatsApp';
+                }
+                isCheckingOut = false;
+            }, 1000);
         }
         
-        // Example function to send data to MCP server
+        // Function to send data to MCP server
         function sendToMCPServer(orderData) {
-            // This would be implemented with actual server endpoints
-            console.log("Order data would be sent to MCP server:", orderData);
-            
-            // In a real implementation, this would use fetch API to send data to your MCP server
-            // For demonstration purposes, we'll simulate a successful response
+            console.log("Sending order data to MCP server:", orderData);
             
             // Format the order data for the MCP server
             const formattedData = {
@@ -1664,35 +1690,64 @@
                 }
             };
             
-            // This is where you would send the data to your MCP server
-            // For example:
-            /*
-            fetch('https://your-mcp-server.com/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formattedData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Order sent to MCP server:', data);
-                
-                // The MCP server would then:
-                // 1. Process the order using Claude
-                // 2. Format it for your inventory/fulfillment system
-                // 3. Send confirmation to the customer via WhatsApp
-            })
-            .catch(error => {
-                console.error('Error sending order to MCP:', error);
-            });
-            */
-            
-            // For testing, let's simulate a successful response
-            console.log('Order sent to MCP server:', formattedData);
-            
-            // In a real implementation, this would be called after the fetch promise resolves
-            simulateMCPResponse(formattedData);
+            // Check if WhatsApp MCP Integration is available
+            if (typeof WhatsAppMCPIntegration !== 'undefined') {
+                try {
+                    // Initialize WhatsApp MCP Integration with config
+                    WhatsAppMCPIntegration.init(config);
+                    
+                    // Prepare order details for WhatsApp MCP
+                    const orderDetails = {
+                        items: orderData.map(item => ({
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity,
+                            category: getProductCategory(item.name)
+                        })),
+                        totalAmount: formattedData.totalAmount
+                    };
+                    
+                    // Get customer phone number (in a real implementation, this would be collected from user)
+                    const customerPhone = prompt("Please enter your phone number to receive order updates:", "");
+                    
+                    if (customerPhone) {
+                        // Send order confirmation via WhatsApp MCP
+                        WhatsAppMCPIntegration.sendOrderConfirmation(customerPhone, orderDetails)
+                            .then(response => {
+                                console.log('Order confirmation sent:', response);
+                            })
+                            .catch(error => {
+                                console.error('Error sending order confirmation:', error);
+                                // Fallback to simulation
+                                simulateMCPResponse(formattedData);
+                            });
+                    } else {
+                        // If no phone number provided, simulate response
+                        console.log('No phone number provided, simulating response');
+                        simulateMCPResponse(formattedData);
+                    }
+                } catch (error) {
+                    console.error('Error using WhatsApp MCP Integration:', error);
+                    // Fallback to simulation
+                    simulateMCPResponse(formattedData);
+                }
+            } else {
+                // If WhatsApp MCP Integration is not available, simulate response
+                console.log('WhatsApp MCP Integration not available, simulating response');
+                simulateMCPResponse(formattedData);
+            }
+        }
+        
+        // Helper function to get product category by name
+        function getProductCategory(productName) {
+            // Search through product data to find the category
+            for (const categoryName in productData) {
+                const products = productData[categoryName].products;
+                if (products.some(product => product.name === productName)) {
+                    return categoryName;
+                }
+            }
+            return "Uncategorized";
         }
         
         // Simulate MCP server response (for testing)
@@ -1786,6 +1841,9 @@
                 });
             }
 
+            // Load delivery config from Apps Script
+            loadDeliveryConfig();
+
             // Notification close functionality
             if (notificationClose) {
                 notificationClose.addEventListener('click', closeNotification);
@@ -1803,6 +1861,22 @@
                 notificationOverlay.style.display = 'none';
             }
         });
+
+        // Fetch delivery config from Google Apps Script and update footer
+        function loadDeliveryConfig() {
+            const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
+            const infoEl = document.getElementById('deliveryInfo');
+            if (!infoEl) return;
+            if (!scriptUrl) return; // keep default text when not configured
+            fetch(`${scriptUrl}?action=config`).then(r=>r.json()).then(data=>{
+                if (!data.success) return;
+                const cfg = data.config;
+                const days = (cfg.deliveryDayNames || []).join(' or ');
+                const time = cfg.deliveryTime || '6:00 PM';
+                const loc = cfg.deliveryLocation || 'Edina Lobby';
+                infoEl.textContent = `Pick up your order at the ${loc}, at ${time} on ${days}`;
+            }).catch(()=>{});
+        }
 
         // Populate product categories in the grid
         function populateProductCategories() {

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1A3A2A" />
+  <title>Suruli Greens - My Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --dark-green:#1A3A2A; --light-green:#7DA95A; --cream:#F5F1E3; --tan:#D9CBA3; --brown:#A67C39; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family:'Montserrat',sans-serif; background:var(--cream); color:var(--dark-green); }
+    header{ background:var(--dark-green); color:var(--cream); padding:16px; position:sticky; top:0; z-index:10; }
+    .container{ max-width:900px; margin:0 auto; padding:16px; }
+    .card{ background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin:16px 0; overflow:hidden; }
+    .card-header{ background:var(--light-green); color:#fff; padding:12px 16px; font-weight:600; }
+    .card-body{ padding:16px; }
+    .search-row{ display:flex; gap:10px; }
+    .input{ flex:1; padding:12px; border-radius:6px; border:1px solid #ddd; font-family:'Montserrat',sans-serif; }
+    .btn{ padding:12px 16px; border:none; border-radius:6px; background:var(--light-green); color:#fff; font-weight:600; cursor:pointer; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .orders{ list-style:none; padding:0; margin:0; }
+    .order{ display:flex; justify-content:space-between; align-items:flex-start; padding:12px 0; border-bottom:1px solid #eee; }
+    .order:last-child{ border-bottom:none; }
+    .order-id{ font-weight:700; }
+    .order-meta{ color:#666; font-size:12px; margin-top:4px; }
+    .order-amount{ color:var(--brown); font-weight:700; white-space:nowrap; }
+    .status{ display:inline-block; padding:3px 8px; border-radius:3px; font-size:12px; margin-top:6px; }
+    .status-pending{ background:#FFC107; color:#333; }
+    .status-paid{ background:#4CAF50; color:#fff; }
+    .status-fulfilled{ background:#2196F3; color:#fff; }
+    .items{ margin-top:8px; font-size:14px; }
+    .empty{ text-align:center; color:#999; padding:24px; }
+    .error{ background:#ffebee; color:#c62828; padding:12px; border-radius:6px; margin-bottom:12px; }
+    footer{ text-align:center; color:var(--cream); background:var(--dark-green); padding:16px; margin-top:24px; font-size:12px; }
+  </style>
+  <script src="config.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div style="font-weight:800;">Suruli Greens - My Orders</div>
+        <a href="index.html" style="color:#fff; text-decoration:none;">Home</a>
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <div id="error" class="error" style="display:none;"></div>
+    <div class="card">
+      <div class="card-header">Find your orders</div>
+      <div class="card-body">
+        <div class="search-row">
+          <input id="phone" class="input" placeholder="Enter your phone number (e.g., 98409 70514)" />
+          <button id="searchBtn" class="btn">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Past Orders</div>
+      <div class="card-body">
+        <div id="loading" class="empty" style="display:none;">Loading...</div>
+        <ul id="orders" class="orders"></ul>
+        <div id="empty" class="empty" style="display:none;">No orders found</div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="deliveryInfo">Pick up your order at the Edina Lobby, at 6pm on Tuesdays or Fridays</footer>
+
+  <script>
+    const phoneEl = document.getElementById('phone');
+    const searchBtn = document.getElementById('searchBtn');
+    const ordersEl = document.getElementById('orders');
+    const emptyEl = document.getElementById('empty');
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+
+    function fmtDate(d){
+      const dt = new Date(d);
+      return dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+    function statusClass(s){
+      const k = (s||'').toLowerCase();
+      if(k==='paid') return 'status status-paid';
+      if(k==='fulfilled') return 'status status-fulfilled';
+      return 'status status-pending';
+    }
+    function normalizePhone(p){
+      const digits = (p||'').replace(/\D/g,'');
+      if(digits.startsWith('91')) return digits;
+      if(digits.length===10) return '91'+digits;
+      return digits;
+    }
+
+    async function fetchOrdersByPhone(phone){
+      const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
+      if(!scriptUrl){
+        // Sample fallback
+        return { success:true, orders:[
+          {orderId:'ORD123456', customerId: phone, orderDate:new Date().toISOString(), totalAmount:340, deliveryDate:new Date(Date.now()+2*86400000).toISOString(), status:'Pending', items:[{name:'Sunflower Microgreens', quantity:2, price:120},{name:'Baby Spinach', quantity:1, price:100}]}
+        ]};
+      }
+      const res = await fetch(`${scriptUrl}?action=orders_by_phone&phone=${encodeURIComponent(phone)}`);
+      return res.json();
+    }
+
+    function renderOrders(list){
+      ordersEl.innerHTML='';
+      if(!list || list.length===0){ emptyEl.style.display='block'; return; }
+      emptyEl.style.display='none';
+      list.forEach(o=>{
+        const li = document.createElement('li');
+        li.className = 'order';
+        const itemsHtml = (o.items||[]).map(i=>`${i.quantity}× ${i.name}`).join(', ');
+        li.innerHTML = `
+          <div>
+            <div class="order-id">${o.orderId}</div>
+            <div class="order-meta">Date: ${fmtDate(o.orderDate)} • Delivery: ${new Date(o.deliveryDate).toLocaleDateString('en-US',{weekday:'long', month:'short', day:'numeric'})}</div>
+            <div class="items">${itemsHtml}</div>
+            <span class="${statusClass(o.status)}">${o.status}</span>
+          </div>
+          <div class="order-amount">₹${o.totalAmount}</div>
+        `;
+        ordersEl.appendChild(li);
+      });
+    }
+
+    async function handleSearch(){
+      const raw = phoneEl.value.trim();
+      if(!raw){ return; }
+      const phone = normalizePhone(raw);
+      errorEl.style.display='none';
+      loadingEl.style.display='block';
+      ordersEl.innerHTML='';
+      emptyEl.style.display='none';
+      searchBtn.disabled = true;
+      try{
+        const data = await fetchOrdersByPhone(phone);
+        if(data.success){ renderOrders(data.orders); }
+        else { throw new Error(data.error||'Failed to fetch orders'); }
+      }catch(err){
+        errorEl.textContent = err.message || 'Failed to fetch orders';
+        errorEl.style.display='block';
+      }finally{
+        loadingEl.style.display='none';
+        searchBtn.disabled = false;
+      }
+    }
+
+    searchBtn.addEventListener('click', handleSearch);
+    phoneEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ handleSearch(); }});
+    // Load delivery config for footer
+    (function loadDeliveryConfig(){
+      const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
+      const infoEl = document.getElementById('deliveryInfo');
+      if(!infoEl || !scriptUrl) return;
+      fetch(`${scriptUrl}?action=config`).then(r=>r.json()).then(data=>{
+        if(!data.success) return;
+        const cfg = data.config;
+        const days = (cfg.deliveryDayNames || []).join(' or ');
+        const time = cfg.deliveryTime || '6:00 PM';
+        const loc = cfg.deliveryLocation || 'Edina Lobby';
+        infoEl.textContent = `Pick up your order at the ${loc}, at ${time} on ${days}`;
+      }).catch(()=>{});
+    })();
+  </script>
+</body>
+</html>
+
+
