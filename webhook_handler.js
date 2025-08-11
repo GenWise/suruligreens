@@ -44,6 +44,27 @@ app.post('/webhook/whatsapp', async (req, res) => {
             chat_jid: chat_jid
         });
         
+        // Check if it's an order placed message
+        if (messageInfo.isOrder) {
+            console.log('New order detected from WhatsApp:', messageInfo);
+            try {
+                const orderDetails = {
+                    items: (messageInfo.items || []).map(it => ({
+                        name: it.name,
+                        price: it.price,
+                        quantity: it.quantity,
+                        category: 'Uncategorized'
+                    })),
+                    totalAmount: messageInfo.totalAmount || 0
+                };
+                await WhatsAppMCPIntegration.sendOrderConfirmation(sender, orderDetails);
+                return res.json({ success: true, message: 'Order processed successfully' });
+            } catch (error) {
+                console.error('Error processing new order:', error);
+                return res.status(500).json({ success: false, error: 'Error processing new order' });
+            }
+        }
+
         // Check if it's a payment confirmation
         if (messageInfo.isPayment) {
             console.log('Payment confirmation detected:', messageInfo);

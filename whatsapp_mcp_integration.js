@@ -350,66 +350,65 @@ const WhatsAppMCPIntegration = (function() {
    */
   function processIncomingMessage(message) {
     // Simple implementation - in reality, would use more sophisticated NLP
-    const content = message.content.toLowerCase();
-    
-    // Check if it's a payment confirmation
+    const raw = String(message.content || '');
+    const content = raw.toLowerCase();
+
+    // 1) Payment confirmation detection
     if (content.includes("payment") || content.includes("paid") || 
         content.includes("upi") || content.includes("screenshot")) {
-      
-      // Try to extract order ID if present
       let orderId = null;
       const orderMatch = content.match(/ord\d{6}/i);
-      if (orderMatch) {
-        orderId = orderMatch[0].toUpperCase();
-      }
-      
-      // Try to extract amount if present
+      if (orderMatch) orderId = orderMatch[0].toUpperCase();
       let amount = null;
       const amountMatch = content.match(/(\d+(\.\d{1,2})?)/);
-      if (amountMatch) {
-        amount = parseFloat(amountMatch[0]);
-      }
-      
-      // Determine payment method
+      if (amountMatch) amount = parseFloat(amountMatch[0]);
       let paymentMethod = "Unknown";
-      if (content.includes("upi")) {
-        paymentMethod = "UPI";
-      } else if (content.includes("whatsapp")) {
-        paymentMethod = "WhatsApp Pay";
-      } else if (content.includes("qr") || content.includes("scan")) {
-        paymentMethod = "QR Code";
-      } else if (content.includes("screenshot")) {
-        paymentMethod = "Screenshot Verification";
-      }
-      
-      return {
-        isPayment: true,
-        orderId: orderId,
-        amount: amount,
-        method: paymentMethod,
-        sender: message.sender
-      };
+      if (content.includes("upi")) paymentMethod = "UPI";
+      else if (content.includes("whatsapp")) paymentMethod = "WhatsApp Pay";
+      else if (content.includes("qr") || content.includes("scan")) paymentMethod = "QR Code";
+      else if (content.includes("screenshot")) paymentMethod = "Screenshot Verification";
+      return { isPayment: true, orderId, amount, method: paymentMethod, sender: message.sender };
     }
-    
-    // Check if it's a response to payment options
+
+    // 2) Payment option replies
     if (content === "1" || content.includes("whatsapp pay")) {
-      return {
-        isPaymentOption: true,
-        option: "whatsapp"
-      };
+      return { isPayment: false, isPaymentOption: true, option: "whatsapp" };
     } else if (content === "2" || content.includes("qr")) {
-      return {
-        isPaymentOption: true,
-        option: "qr"
-      };
+      return { isPayment: false, isPaymentOption: true, option: "qr" };
     } else if (content === "3" || content.includes("call")) {
-      return {
-        isPaymentOption: true,
-        option: "call"
-      };
+      return { isPayment: false, isPaymentOption: true, option: "call" };
     }
-    
-    return { isPayment: false, isPaymentOption: false };
+
+    // 3) New order detection from website prefilled text
+    // Pattern: lines like "2x Item Name - ₹240" and a line "Total: ₹340"
+    if (/place an order/i.test(raw) || /order for/i.test(raw)) {
+      const lines = raw.split(/\r?\n/);
+      const items = [];
+      let parsedTotal = null;
+      for (const line of lines) {
+        const totalMatch = /total\s*:\s*(?:₹|rs\.?|inr)?\s*([0-9]+(?:\.[0-9]{1,2})?)/i.exec(line);
+        if (totalMatch) {
+          const amt = parseFloat(totalMatch[1]);
+          if (!Number.isNaN(amt)) parsedTotal = amt;
+          continue;
+        }
+        const itemMatch = /^(\d+)x\s+(.+?)\s*-\s*(?:₹|rs\.?|inr)?\s*([0-9]+(?:\.[0-9]{1,2})?)/i.exec(line.trim());
+        if (itemMatch) {
+          const quantity = parseInt(itemMatch[1], 10);
+          const name = itemMatch[2].trim();
+          const lineAmount = parseFloat(itemMatch[3]);
+          const qty = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+          const unitPrice = Number.isFinite(lineAmount) ? (lineAmount / qty) : 0;
+          items.push({ name, quantity: qty, price: unitPrice });
+        }
+      }
+      if (items.length > 0 || parsedTotal !== null) {
+        const totalAmount = parsedTotal != null ? parsedTotal : items.reduce((s, it) => s + it.price * it.quantity, 0);
+        return { isPayment: false, isPaymentOption: false, isOrder: true, items, totalAmount };
+      }
+    }
+
+    return { isPayment: false, isPaymentOption: false, isOrder: false };
   }
   
   // Public API

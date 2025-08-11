@@ -1456,7 +1456,6 @@
     <script src="debug.js"></script>
     
     <script src="config.js"></script>
-    <script src="whatsapp_mcp_integration.js"></script>
     <script>
         // Shopping cart functionality
         let cart = [];
@@ -1647,11 +1646,8 @@
             const phoneNumber = "919840970514"; // No plus sign, just country code and number
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
             
-            // Open WhatsApp with the pre-filled message
+            // Open WhatsApp with the pre-filled message (no browser POSTs)
             window.open(whatsappUrl, "_blank");
-
-            // Send data to the MCP server
-            sendToMCPServer(cart);
 
             // Clear the cart deterministically and update UI
             cart = [];
@@ -1671,72 +1667,7 @@
             }, 1000);
         }
         
-        // Function to send data to MCP server
-        function sendToMCPServer(orderData) {
-            console.log("Sending order data to MCP server:", orderData);
-            
-            // Format the order data for the MCP server
-            const formattedData = {
-                orderItems: orderData,
-                timestamp: new Date().toISOString(),
-                channel: 'website',
-                totalAmount: orderData.reduce((total, item) => total + (item.price * item.quantity), 0),
-                customerInfo: {
-                    // This would be collected from a form in a real implementation
-                    // For now, we'll use placeholder values
-                    name: "Customer",
-                    phone: "",
-                    address: ""
-                }
-            };
-            
-            // Check if WhatsApp MCP Integration is available
-            if (typeof WhatsAppMCPIntegration !== 'undefined') {
-                try {
-                    // Initialize WhatsApp MCP Integration with config
-                    WhatsAppMCPIntegration.init(config);
-                    
-                    // Prepare order details for WhatsApp MCP
-                    const orderDetails = {
-                        items: orderData.map(item => ({
-                            name: item.name,
-                            price: item.price,
-                            quantity: item.quantity,
-                            category: getProductCategory(item.name)
-                        })),
-                        totalAmount: formattedData.totalAmount
-                    };
-                    
-                    // Get customer phone number (in a real implementation, this would be collected from user)
-                    const customerPhone = prompt("Please enter your phone number to receive order updates:", "");
-                    
-                    if (customerPhone) {
-                        // Send order confirmation via WhatsApp MCP
-                        WhatsAppMCPIntegration.sendOrderConfirmation(customerPhone, orderDetails)
-                            .then(response => {
-                                console.log('Order confirmation sent:', response);
-                            })
-                            .catch(error => {
-                                console.error('Error sending order confirmation:', error);
-                                // Fallback to simulation
-                                simulateMCPResponse(formattedData);
-                            });
-                    } else {
-                        // If no phone number provided, simulate response
-                        console.log('No phone number provided, simulating response');
-                        simulateMCPResponse(formattedData);
-                    }
-                } catch (error) {
-                    console.error('Error using WhatsApp MCP Integration:', error);
-                    // Fallback to simulation
-                    simulateMCPResponse(formattedData);
-                }
-            } else {
-                // If WhatsApp MCP Integration is not available, simulate response
-                console.log('WhatsApp MCP Integration not available, simulating response');
-                simulateMCPResponse(formattedData);
-            }
-        }
+        // Note: Browser does not POST orders. Server will parse the WhatsApp message and store the order.
         
         // Helper function to get product category by name
         function getProductCategory(productName) {
