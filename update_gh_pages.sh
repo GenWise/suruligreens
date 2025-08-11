@@ -1,13 +1,12 @@
 #!/bin/bash
-
-# Ensure we're on the gh-pages branch
+set -euo pipefail
+git fetch origin gh-pages
 git checkout gh-pages
-
-# Make sure we have the latest changes
-git add .
-git commit -m "Update GitHub Pages with product categories"
-
-# Force push to gh-pages branch
-git push -f origin gh-pages
-
-echo "GitHub Pages updated!" 
+git pull --rebase origin gh-pages
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  git add -A
+  git commit -m "${1:-Update GitHub Pages}"
+  git push origin gh-pages
+else
+  echo "No changes to publish."
+fi

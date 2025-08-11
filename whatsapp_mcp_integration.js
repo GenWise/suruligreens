@@ -191,28 +191,14 @@ const WhatsAppMCPIntegration = (function() {
    * @param {Object} orderDetails - Order details
    * @return {Promise} - Promise that resolves with the response
    */
-  function storeOrder(customerId, orderDetails) {
-    // Prepare the data to send to Google Apps Script
+  async function storeOrder(customerId, orderDetails) {
     const data = {
       type: "new_order",
       customerId: customerId,
       items: orderDetails.items,
       totalAmount: orderDetails.totalAmount
     };
-    
-    // Send to Google Apps Script
-    return fetch(config.googleScriptUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .catch(error => {
-      console.error('Error storing order:', error);
-      throw error;
-    });
+    return postToAppsScript(data);
   }
   
   /**
@@ -221,8 +207,7 @@ const WhatsAppMCPIntegration = (function() {
    * @param {Object} paymentDetails - Payment details
    * @return {Promise} - Promise that resolves with the response
    */
-  function storePayment(customerId, paymentDetails) {
-    // Prepare the data to send to Google Apps Script
+  async function storePayment(customerId, paymentDetails) {
     const data = {
       type: "payment_confirmation",
       customerId: customerId,
@@ -230,20 +215,65 @@ const WhatsAppMCPIntegration = (function() {
       amount: paymentDetails.amount,
       message: paymentDetails.message || "Payment received"
     };
+    return postToAppsScript(data);
+  }
+
+  /**
+   * POST to Apps Script handling 302 redirect by re-POSTing to the Location
+   */
+  async function postToAppsScript(jsonData) {
+    if (!config.googleScriptUrl) {
+      throw new Error('Missing GOOGLE_SCRIPT_URL in config');
+    }
+    const headers = { 'Content-Type': 'application/json' };
+    const body = JSON.stringify(jsonData);
     
-    // Send to Google Apps Script
-    return fetch(config.googleScriptUrl, {
+    // First request: don't auto-follow so we can preserve POST on redirect
+    let response = await fetch(config.googleScriptUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .catch(error => {
-      console.error('Error storing payment:', error);
-      throw error;
+      headers,
+      body,
+      redirect: 'manual'
     });
+    
+    if ([301, 302, 303, 307, 308].includes(response.status)) {
+      const location = response.headers.get('location');
+      if (!location) {
+        throw new Error(`Redirected without Location (status ${response.status})`);
+      }
+      // Second request: re-POST to the redirected endpoint
+      response = await fetch(location, { method: 'POST', headers, body });
+    }
+    
+    const text = await response.text();
+    let json;
+    try {
+      json = JSON.parse(text);
+      if (response.ok && json && json.success === true) {
+        return json;
+      }
+      // If JSON but not success, fall through to GET fallback
+    } catch (_) {
+      // Non-JSON; try GET fallback
+    }
+    
+    // Fallback: try a GET with query params (some Apps Script deployments redirect POST to GET)
+    try {
+      const url = new URL(config.googleScriptUrl);
+      Object.entries(jsonData || {}).forEach(([k, v]) => {
+        url.searchParams.set(k, typeof v === 'string' ? v : JSON.stringify(v));
+      });
+      url.searchParams.set('via', 'get_fallback');
+      const getRes = await fetch(url.toString(), { method: 'GET' });
+      const getText = await getRes.text();
+      const getJson = JSON.parse(getText);
+      if (!getRes.ok || getJson.success !== true) {
+        throw new Error(`Apps Script GET fallback error (status ${getRes.status}): ${getText.slice(0,200)}`);
+      }
+      return getJson;
+    } catch (fallbackErr) {
+      throw new Error(`Apps Script POST failed and GET fallback failed. Last error: ${fallbackErr.message}`);
+    }
   }
   
   /**

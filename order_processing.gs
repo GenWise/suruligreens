@@ -444,6 +444,37 @@ function doPost(e) {
  */
 function doGet(e) {
   try {
+    // Fallback support: allow write operations via GET when explicitly requested
+    // This is used by clients that cannot preserve POST across Apps Script redirects
+    if (e && e.parameter && (e.parameter.via === 'get_fallback') && e.parameter.type) {
+      const type = String(e.parameter.type || '').toLowerCase();
+      if (type === 'new_order') {
+        const customerId = String(e.parameter.customerId || '');
+        const totalAmount = parseFloat(e.parameter.totalAmount || '0') || 0;
+        let items = [];
+        try {
+          items = JSON.parse(String(e.parameter.items || '[]'));
+        } catch (_) { items = []; }
+        const orderId = processNewOrder(customerId, items, totalAmount);
+        return ContentService.createTextOutput(JSON.stringify({ success: true, orderId: orderId }))
+          .setMimeType(ContentService.MimeType.JSON);
+      } else if (type === 'payment_confirmation') {
+        const orderId = String(e.parameter.orderId || '');
+        const customerId = String(e.parameter.customerId || '');
+        const amount = parseFloat(e.parameter.amount || '0') || 0;
+        const message = String(e.parameter.message || '');
+        // Infer method from message when possible
+        let method = 'Unknown';
+        try {
+          const info = parsePaymentMessage(message);
+          if (info && info.method) { method = info.method; }
+        } catch (_) {}
+        const ok = processPayment(orderId, customerId, amount, method);
+        return ContentService.createTextOutput(JSON.stringify({ success: ok }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
     if (e.parameter.action === "dashboard") {
       const dashboardData = getDashboardData();
       return ContentService.createTextOutput(JSON.stringify({

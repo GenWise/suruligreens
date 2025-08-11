@@ -21,7 +21,7 @@ const config = {
     
     // Google Apps Script Web App URL
     // After deploying your Google Apps Script, paste the web app URL here
-    GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyKBIRgRDrCVmLl_gnxRlnq1Kk8Tqpue-7gzpq9yVZPypSOfCsUVgEkMiwJZjemOgBJ/exec'
+    GOOGLE_SCRIPT_URL: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjo6LbYkTpQuzonFNiaL-RyJVtr0-KDMlPxl4U066ZN_D6t42Yg1rBTHzxMyNwWlOLF_UQ1La29U-GD_SxAuC6nb2FCl6ETHIdKiMzoP7fsYaYB6237infYPxg2oKaq2uiasvDST8tJvy4bA0CI1vvmmkqkES3yQpEaWiZUNjW9Nuvht3v4eqtZljVpQmVdtPQWn3cAwfgF0fo4dyrii9HXJSUCQ3O_Nw-laHQtHHaQVlBUlN4PeijADLV4_TvVdEq_NQguHLYCNIou1kwGeOTmlSSjwzFNVjMYQJU-sgHY0gLwq2Y&lib=M2auU0JcZQAHBRmivLacEMWAnco0gBSxC',
     
     // Delivery Configuration
     DELIVERY_DAYS: ['Tuesday', 'Friday'],
