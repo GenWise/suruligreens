@@ -326,18 +326,11 @@ async function finalizeProductsLoad() {
         function resolveCategoryImage(categoryName, existingImage) {
             const key = normalizeName(categoryName);
             const meta = categoriesMeta[key] || {};
-            const fromMeta = meta.image ? toAbsoluteUrl(meta.image) : '';
-            // Try to derive from first product image in this category
-            let fromFirstProduct = '';
-            try {
-                const first = (productData[categoryName] && productData[categoryName].products || []).find(p => p.imageUrl);
-                if (first && first.imageUrl) {
-                    fromFirstProduct = toAbsoluteUrl(first.imageUrl);
-                }
-            } catch (_) {}
+            const fromMeta = meta.image && String(meta.image).trim() ? toAbsoluteUrl(String(meta.image).trim()) : '';
             const fallbackLocal = localImageMap[key] ? toAbsoluteUrl(localImageMap[key]) : '';
             const unsplash = `https://source.unsplash.com/300x200/?${encodeURIComponent(categoryName.toLowerCase())}`;
-            return fromMeta || fromFirstProduct || fallbackLocal || existingImage || unsplash;
+            // Strict priority: sheet meta > local fallback > existing > unsplash
+            return fromMeta || fallbackLocal || existingImage || unsplash;
         }
 
         // Merge description and compute image per category
