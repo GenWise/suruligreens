@@ -19,7 +19,7 @@ const localImageMap = {
     'microgreens': 'assets/images/categories/Microgreens.jpeg',
     'hydroponic greens': 'assets/images/categories/Microgreens.jpeg',
     'fresh herbs': 'assets/images/categories/Microgreens.jpeg',
-    'traditional rice': 'assets/images/categories/Microgreens.jpeg',
+    'traditional rice': 'assets/images/categories/traditional_rice.jpeg',
     'fruit': 'assets/images/categories/Microgreens.jpeg',
     'weekly box': 'assets/images/categories/Microgreens.jpeg',
     'weekly basket': 'assets/images/categories/Microgreens.jpeg'
