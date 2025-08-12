@@ -24,7 +24,16 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log('Product data after delay:', productData);
         console.log('Product data keys:', Object.keys(productData));
         console.log('Number of categories:', Object.keys(productData).length);
-        
+
+        // Dump resolved category images for debugging
+        try {
+            for (const k in productData) {
+                if (!Object.prototype.hasOwnProperty.call(productData, k)) continue;
+                const c = productData[k];
+                console.log(`[Category Image] ${k} ->`, c && c.image);
+            }
+        } catch (e) {}
+
         // Try to manually populate categories if not already done
         if (Object.keys(productData).length > 0 && productsGrid && productsGrid.children.length === 0) {
             console.log('Attempting manual population of categories');
@@ -35,7 +44,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 console.error('Error during manual population:', e);
             }
         }
-    }, 3000);
+    }, 2000);
     
     // Check for Google Sheet fetch errors
     window.addEventListener('error', function(e) {
