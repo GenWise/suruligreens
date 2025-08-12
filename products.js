@@ -51,7 +51,8 @@ async function fetchDirectMethod() {
     console.log('Trying direct fetch method...');
     
     // For a public sheet, we can use this simpler URL
-    const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+        const cacheBuster = Date.now();
+        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&cb=${cacheBuster}`;
     
     const response = await fetch(sheetURL);
     const text = await response.text();
@@ -72,7 +73,8 @@ async function fetchDirectMethod() {
 // JSONP method (avoids CORS issues)
 function fetchGVizSheetJSONP(sheetName) {
     return new Promise((resolve, reject) => {
-        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=SELECT%20*`;
+        const cacheBuster = Date.now();
+        const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=SELECT%20*&cb=${cacheBuster}`;
         const script = document.createElement('script');
         script.src = sheetURL;
         const prevGoogle = window.google;
