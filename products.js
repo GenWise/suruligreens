@@ -299,23 +299,18 @@ async function fetchCategoriesMeta() {
     const candidates = ['Categories', 'Category'];
     for (const sheetName of candidates) {
         try {
-            console.log(`Attempting to load Categories sheet: ${sheetName}`);
-            const cacheBuster = Date.now();
-            const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=SELECT%20*&cb=${cacheBuster}`;
+            console.log(`[Categories] Attempting to load Categories sheet: ${sheetName}`);
             
-            const response = await fetch(sheetURL);
-            const text = await response.text();
-            const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-            const data = JSON.parse(jsonText);
+            // Use JSONP approach like the main products sheet - CORS blocks direct fetch
+            const table = await fetchGVizSheetJSONP(sheetName);
             
-            if (!data.table || !data.table.rows || data.table.rows.length === 0) {
-                console.warn(`Sheet ${sheetName} is empty or invalid`);
+            if (!table || !table.rows || table.rows.length === 0) {
+                console.warn(`[Categories] Sheet ${sheetName} is empty or invalid`);
                 continue;
             }
             
-            const table = data.table;
             const headers = (table.cols || []).map(col => String((col && col.label != null) ? col.label : ''));
-            console.log(`Headers found in ${sheetName}:`, headers);
+            console.log(`[Categories] Headers found in ${sheetName}:`, headers);
             
             const headerMap = {
                 category: headers.findIndex(h => h.toLowerCase().includes('category')),
@@ -323,7 +318,7 @@ async function fetchCategoriesMeta() {
                 imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
             };
             
-            console.log(`Header mapping for ${sheetName}:`, headerMap);
+            console.log(`[Categories] Header mapping for ${sheetName}:`, headerMap);
             
             const meta = {};
             for (let i = 0; i < table.rows.length; i++) {
@@ -338,20 +333,20 @@ async function fetchCategoriesMeta() {
                 
                 const key = normalizeName(name);
                 meta[key] = { description, image: imageUrl };
-                console.log(`Categories meta entry: ${name} (${key}) -> image: ${imageUrl}`);
+                console.log(`[Categories] Meta entry: ${name} (${key}) -> image: ${imageUrl}`);
             }
             
-            console.log(`Successfully loaded Categories metadata from ${sheetName}:`, meta);
+            console.log(`[Categories] Successfully loaded metadata from ${sheetName}:`, meta);
             try { window.categoriesMeta = meta; } catch (_) {}
             return meta;
             
         } catch (error) {
-            console.warn(`Failed to load Categories sheet ${sheetName}:`, error);
+            console.warn(`[Categories] Failed to load sheet ${sheetName}:`, error);
             continue;
         }
     }
     
-    console.warn('No Categories sheet found, using empty metadata');
+    console.warn('[Categories] No Categories sheet found, using empty metadata');
     const emptyMeta = {};
     try { window.categoriesMeta = emptyMeta; } catch (_) {}
     return emptyMeta;
