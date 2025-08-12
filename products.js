@@ -19,6 +19,8 @@ const localImageMap = {
     'microgreens': 'assets/images/categories/Microgreens.jpeg',
     'hydroponic greens': 'assets/images/categories/Microgreens.jpeg',
     'fresh herbs': 'assets/images/categories/Microgreens.jpeg',
+    'traditional rice': 'assets/images/categories/Microgreens.jpeg',
+    'fruit': 'assets/images/categories/Microgreens.jpeg',
     'weekly box': 'assets/images/categories/Microgreens.jpeg',
     'weekly basket': 'assets/images/categories/Microgreens.jpeg'
 };
@@ -321,18 +323,29 @@ async function finalizeProductsLoad() {
         // Merge (case-insensitive, trimmed)
         for (const categoryName in productData) {
             const key = normalizeName(categoryName);
-            if (categoriesMeta[key]) {
-                const meta = categoriesMeta[key];
-                if (meta.description) {
-                    productData[categoryName].description = meta.description;
-                }
-                if (meta.image) {
-                    productData[categoryName].image = toAbsoluteUrl(meta.image);
-                }
+            const category = productData[categoryName];
+            const meta = categoriesMeta[key] || {};
+            if (meta.description) {
+                category.description = meta.description;
             }
+            // Choose image with priority: meta.image -> local fallback -> existing value -> Unsplash
+            const fallbackLocal = localImageMap[key] ? toAbsoluteUrl(localImageMap[key]) : '';
+            const existing = category.image;
+            const unsplash = `https://source.unsplash.com/300x200/?${encodeURIComponent(categoryName.toLowerCase())}`;
+            category.image = toAbsoluteUrl(meta.image || '') || fallbackLocal || existing || unsplash;
         }
     } catch (_) {
         // Ignore metadata failures; proceed with defaults
+        // Still apply local fallback where missing
+        for (const categoryName in productData) {
+            const key = normalizeName(categoryName);
+            const category = productData[categoryName];
+            if (!category.image) {
+                const fallbackLocal = localImageMap[key] ? toAbsoluteUrl(localImageMap[key]) : '';
+                const unsplash = `https://source.unsplash.com/300x200/?${encodeURIComponent(categoryName.toLowerCase())}`;
+                category.image = fallbackLocal || unsplash;
+            }
+        }
     }
     populateProductCategories();
     setupProductCategoryEvents();
