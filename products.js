@@ -311,12 +311,21 @@ async function fetchCategoriesMeta() {
             
             const headers = (table.cols || []).map(col => String((col && col.label != null) ? col.label : ''));
             console.log(`[Categories] Headers found in ${sheetName}:`, headers);
+            console.log(`[Categories] Raw table columns:`, table.cols);
+            console.log(`[Categories] First few rows:`, table.rows.slice(0, 3));
             
-            const headerMap = {
-                category: headers.findIndex(h => h.toLowerCase().includes('category')),
-                description: headers.findIndex(h => h.toLowerCase().includes('description')),
-                imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
-            };
+            // If headers are empty, assume standard order: Category, Description, Image
+            let headerMap;
+            if (headers.every(h => !h.trim())) {
+                console.log(`[Categories] No headers detected, assuming standard order: [Category, Description, Image]`);
+                headerMap = { category: 0, description: 1, imageUrl: 2 };
+            } else {
+                headerMap = {
+                    category: headers.findIndex(h => h.toLowerCase().includes('category')),
+                    description: headers.findIndex(h => h.toLowerCase().includes('description')),
+                    imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
+                };
+            }
             
             console.log(`[Categories] Header mapping for ${sheetName}:`, headerMap);
             
