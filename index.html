@@ -1746,7 +1746,7 @@
             // Persist order to Google Sheets via Apps Script before opening WhatsApp
             let orderSaved = false;
             try {
-                const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
+                const scriptUrl = (typeof config !== 'undefined' && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
                 if (scriptUrl) {
                     console.log('[Order] Saving order to Google Sheets...');
                     const payload = {
@@ -1957,7 +1957,7 @@
 
         // Fetch delivery config from Google Apps Script and update footer
         function loadDeliveryConfig() {
-            const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
+            const scriptUrl = (typeof config !== 'undefined' && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
             const infoEl = document.getElementById('deliveryInfo');
             if (!infoEl) return;
             if (!scriptUrl) return; // keep default text when not configured
