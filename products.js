@@ -164,9 +164,16 @@ async function fetchCSVMethod() {
         
         // Create category if it doesn't exist
         if (!productData[category]) {
+            // Prefer local category image when available
+            const defaultImage = `https://source.unsplash.com/300x200/?${encodeURIComponent(category.toLowerCase())}`;
+            const localImageMap = {
+                'fresh microgreens': 'assets/images/categories/Microgreens.jpeg',
+                'microgreens': 'assets/images/categories/Microgreens.jpeg'
+            };
+            const key = String(category || '').trim().toLowerCase();
             productData[category] = {
                 description: `${category} from Suruli Greens`,
-                image: `https://source.unsplash.com/300x200/?${encodeURIComponent(category.toLowerCase())}`,
+                image: localImageMap[key] ? toAbsoluteUrl(localImageMap[key]) : defaultImage,
                 products: []
             };
         }
@@ -228,9 +235,11 @@ function processSheetData(tableData) {
         
         // Create category if it doesn't exist
         if (!productData[category]) {
+            const defaultImage2 = `https://source.unsplash.com/300x200/?${encodeURIComponent(category.toLowerCase())}`;
+            const key2 = String(category || '').trim().toLowerCase();
             productData[category] = {
                 description: `${category} from Suruli Greens`,
-                image: `https://source.unsplash.com/300x200/?${encodeURIComponent(category.toLowerCase())}`,
+                image: localImageMap[key2] ? toAbsoluteUrl(localImageMap[key2]) : defaultImage2,
                 products: []
             };
         }
@@ -414,7 +423,7 @@ function showProductsModal(categoryName) {
             const availabilityClass = product.availability === 'In Stock' ? 'in-stock' : 'out-of-stock';
             
             // Use product image if available, otherwise generate one
-            const imageUrl = product.imageUrl || `https://source.unsplash.com/300x200/?${encodeURIComponent(product.name.toLowerCase())}`;
+            const imageUrl = (product.imageUrl && toAbsoluteUrl(product.imageUrl)) || `https://source.unsplash.com/300x200/?${encodeURIComponent(product.name.toLowerCase())}`;
             
             productItem.innerHTML = `
                 <div class="product-item-image">
