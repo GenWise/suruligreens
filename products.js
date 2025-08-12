@@ -115,10 +115,26 @@ function fetchGVizSheetJSONP(sheetName) {
 
 function fetchJSONPMethod() {
     console.log('Trying JSONP method...');
-    return fetchGVizSheetJSONP('Sheet1').then(table => {
-        processSheetData(table);
-        return finalizeProductsLoad().then(() => true);
-    });
+    // Try common sheet names in order
+    const candidates = ['Products', 'Sheet1', 'Sheet'];
+    let lastError = null;
+    const tryNext = (idx) => {
+        if (idx >= candidates.length) {
+            if (lastError) throw lastError; else throw new Error('No suitable sheet found');
+        }
+        const name = candidates[idx];
+        return fetchGVizSheetJSONP(name)
+            .then(table => {
+                processSheetData(table);
+                return finalizeProductsLoad().then(() => true);
+            })
+            .catch(err => {
+                lastError = err;
+                console.warn(`GViz JSONP failed for ${name}:`, err && err.message ? err.message : err);
+                return tryNext(idx + 1);
+            });
+    };
+    return tryNext(0);
 }
 
 // CSV method (another approach to avoid CORS issues)
@@ -229,7 +245,9 @@ function processSheetData(tableData) {
         let category = headerMap.category >= 0 ? (row[headerMap.category] && row[headerMap.category].v != null ? row[headerMap.category].v : 'Uncategorized') : 'Uncategorized';
         category = String(category === null || category === undefined ? 'Uncategorized' : category).trim();
         const description = headerMap.description >= 0 ? String(row[headerMap.description] && row[headerMap.description].v != null ? row[headerMap.description].v : '').trim() : '';
-        const price = headerMap.price >= 0 ? parseFloat(row[headerMap.price] && row[headerMap.price].v != null ? row[headerMap.price].v : 0) || 0 : 0;
+        // Ensure price is numeric; ignore header rows or stray text rows
+        const rawPrice = headerMap.price >= 0 ? (row[headerMap.price] && row[headerMap.price].v != null ? row[headerMap.price].v : 0) : 0;
+        const price = (typeof rawPrice === 'number') ? rawPrice : parseFloat(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
         const availability = headerMap.availability >= 0 ? String(row[headerMap.availability] && row[headerMap.availability].v != null ? row[headerMap.availability].v : 'In Stock') : 'In Stock';
         const imageUrl = headerMap.imageUrl >= 0 ? String(row[headerMap.imageUrl] && row[headerMap.imageUrl].v != null ? row[headerMap.imageUrl].v : '').trim() : '';
         
@@ -423,7 +441,7 @@ function showProductsModal(categoryName) {
             const availabilityClass = product.availability === 'In Stock' ? 'in-stock' : 'out-of-stock';
             
             // Use product image if available, otherwise generate one
-            const imageUrl = (product.imageUrl && toAbsoluteUrl(product.imageUrl)) || `https://source.unsplash.com/300x200/?${encodeURIComponent(product.name.toLowerCase())}`;
+            const imageUrl = (product.imageUrl ? toAbsoluteUrl(product.imageUrl) : '') || `https://source.unsplash.com/300x200/?${encodeURIComponent((product.name||'').toLowerCase())}`;
             
             productItem.innerHTML = `
                 <div class="product-item-image">
