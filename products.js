@@ -26,15 +26,7 @@ async function fetchProductData() {
         console.error('JSONP method failed:', jsonpError);
     }
 
-    // Fallback to CSV (works without JSONP and avoids CORS in many cases)
-    try {
-        await fetchCSVMethod();
-        return;
-    } catch (csvError) {
-        console.error('CSV method failed:', csvError);
-    }
-
-    // Last resort: attempt direct method
+    // Last resort: attempt direct method (skip naive CSV to avoid comma parsing issues)
     try {
         await fetchDirectMethod();
     } catch (error) {
@@ -234,6 +226,15 @@ function processSheetData(tableData) {
         imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
     };
     
+    // Helper: validate category
+    function isValidCategory(cat) {
+        const s = String(cat || '').trim();
+        if (!s) return false;
+        if (/^\d/.test(s)) return false; // skip numeric-like categories such as '100'
+        if (/^(quantity|price|availability)$/i.test(s)) return false;
+        return true;
+    }
+
     // Iterate all data rows
     for (let i = 0; i < tableData.rows.length; i++) {
         const row = tableData.rows[i].c;
@@ -244,6 +245,10 @@ function processSheetData(tableData) {
         const name = headerMap.name >= 0 ? String(row[headerMap.name] && row[headerMap.name].v != null ? row[headerMap.name].v : '').trim() : '';
         let category = headerMap.category >= 0 ? (row[headerMap.category] && row[headerMap.category].v != null ? row[headerMap.category].v : 'Uncategorized') : 'Uncategorized';
         category = String(category === null || category === undefined ? 'Uncategorized' : category).trim();
+        if (!isValidCategory(category)) {
+            // Skip malformed rows (e.g., CSV-shifted or header artifacts)
+            continue;
+        }
         const description = headerMap.description >= 0 ? String(row[headerMap.description] && row[headerMap.description].v != null ? row[headerMap.description].v : '').trim() : '';
         // Ensure price is numeric; ignore header rows or stray text rows
         const rawPrice = headerMap.price >= 0 ? (row[headerMap.price] && row[headerMap.price].v != null ? row[headerMap.price].v : 0) : 0;
