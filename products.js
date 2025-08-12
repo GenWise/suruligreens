@@ -322,7 +322,25 @@ async function fetchCategoriesMeta() {
 async function finalizeProductsLoad() {
     try {
         const categoriesMeta = await fetchCategoriesMeta();
-        // Merge (case-insensitive, trimmed)
+        // Helper to compute best image for a category
+        function resolveCategoryImage(categoryName, existingImage) {
+            const key = normalizeName(categoryName);
+            const meta = categoriesMeta[key] || {};
+            const fromMeta = meta.image ? toAbsoluteUrl(meta.image) : '';
+            // Try to derive from first product image in this category
+            let fromFirstProduct = '';
+            try {
+                const first = (productData[categoryName] && productData[categoryName].products || []).find(p => p.imageUrl);
+                if (first && first.imageUrl) {
+                    fromFirstProduct = toAbsoluteUrl(first.imageUrl);
+                }
+            } catch (_) {}
+            const fallbackLocal = localImageMap[key] ? toAbsoluteUrl(localImageMap[key]) : '';
+            const unsplash = `https://source.unsplash.com/300x200/?${encodeURIComponent(categoryName.toLowerCase())}`;
+            return fromMeta || fromFirstProduct || fallbackLocal || existingImage || unsplash;
+        }
+
+        // Merge description and compute image per category
         for (const categoryName in productData) {
             const key = normalizeName(categoryName);
             const category = productData[categoryName];
@@ -330,11 +348,7 @@ async function finalizeProductsLoad() {
             if (meta.description) {
                 category.description = meta.description;
             }
-            // Choose image with priority: meta.image -> local fallback -> existing value -> Unsplash
-            const fallbackLocal = localImageMap[key] ? toAbsoluteUrl(localImageMap[key]) : '';
-            const existing = category.image;
-            const unsplash = `https://source.unsplash.com/300x200/?${encodeURIComponent(categoryName.toLowerCase())}`;
-            category.image = toAbsoluteUrl(meta.image || '') || fallbackLocal || existing || unsplash;
+            category.image = resolveCategoryImage(categoryName, category.image);
         }
     } catch (_) {
         // Ignore metadata failures; proceed with defaults
