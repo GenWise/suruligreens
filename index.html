@@ -1744,23 +1744,54 @@
             const encodedText = encodeURIComponent(orderText);
             
             // Persist order to Google Sheets via Apps Script before opening WhatsApp
+            let orderSaved = false;
             try {
                 const scriptUrl = (window.config && config.GOOGLE_SCRIPT_URL) ? config.GOOGLE_SCRIPT_URL : '';
                 if (scriptUrl) {
+                    console.log('[Order] Saving order to Google Sheets...');
                     const payload = {
                         type: 'new_order',
                         customerId: config.WHATSAPP_NUMBER || 'website',
                         items: cart,
-                        totalAmount
+                        totalAmount,
+                        timestamp: new Date().toISOString()
                     };
-                    await fetch(scriptUrl, {
+                    
+                    const response = await fetch(scriptUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
                         redirect: 'follow'
-                    }).catch(()=>{});
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            orderSaved = true;
+                            console.log('[Order] Successfully saved to Google Sheets');
+                        } else {
+                            console.error('[Order] Failed to save to Google Sheets:', result.error);
+                        }
+                    } else {
+                        console.error('[Order] HTTP error saving to Google Sheets:', response.status);
+                    }
+                } else {
+                    console.warn('[Order] No Google Script URL configured');
                 }
-            } catch (_) {}
+            } catch (error) {
+                console.error('[Order] Error saving to Google Sheets:', error);
+            }
+            
+            // Show user feedback about order status
+            if (orderSaved) {
+                alert('✅ Order saved! Opening WhatsApp to confirm with Suruli Greens...');
+            } else {
+                const proceed = confirm('⚠️ Unable to save order to our system. Would you still like to send via WhatsApp? (Please mention this issue when you contact us)');
+                if (!proceed) {
+                    isCheckingOut = false;
+                    return;
+                }
+            }
 
             // Try multiple formats for maximum compatibility
             // Format 1: Direct mobile number with international format (most reliable)
