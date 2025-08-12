@@ -19,7 +19,7 @@ const localImageMap = {
     'microgreens': 'assets/images/categories/Microgreens.jpeg',
     'hydroponic greens': 'assets/images/categories/Microgreens.jpeg',
     'fresh herbs': 'assets/images/categories/Microgreens.jpeg',
-    'traditional rice': 'assets/images/categories/traditional_rice.jpeg',
+    'traditional rice': 'assets/images/categories/Microgreens.jpeg',
     'fruit': 'assets/images/categories/Microgreens.jpeg',
     'weekly box': 'assets/images/categories/Microgreens.jpeg',
     'weekly basket': 'assets/images/categories/Microgreens.jpeg'
@@ -296,28 +296,65 @@ function processSheetData(tableData) {
 
 // Fetch optional Categories sheet metadata and merge into productData
 async function fetchCategoriesMeta() {
-    // Use JSONP to load the Categories sheet
-    const table = await fetchGVizSheetJSONP('Categories');
-    if (!table || !table.rows || table.rows.length === 0) return {};
-    // Headers from column labels
-    const headers = (table.cols || []).map(col => String((col && col.label != null) ? col.label : ''));
-    const headerMap = {
-        category: headers.findIndex(h => h.toLowerCase().includes('category')),
-        description: headers.findIndex(h => h.toLowerCase().includes('description')),
-        imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
-    };
-    const meta = {};
-    for (let i = 0; i < table.rows.length; i++) {
-        const row = table.rows[i].c;
-        if (!row) continue;
-        const name = headerMap.category >= 0 ? String(row[headerMap.category] && row[headerMap.category].v != null ? row[headerMap.category].v : '').trim() : '';
-        if (!name) continue;
-        const description = headerMap.description >= 0 ? String(row[headerMap.description] && row[headerMap.description].v != null ? row[headerMap.description].v : '').trim() : '';
-        const imageUrl = headerMap.imageUrl >= 0 ? String(row[headerMap.imageUrl] && row[headerMap.imageUrl].v != null ? row[headerMap.imageUrl].v : '').trim() : '';
-        meta[normalizeName(name)] = { description, image: imageUrl };
+    const candidates = ['Categories', 'Category'];
+    for (const sheetName of candidates) {
+        try {
+            console.log(`Attempting to load Categories sheet: ${sheetName}`);
+            const cacheBuster = Date.now();
+            const sheetURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tq=SELECT%20*&cb=${cacheBuster}`;
+            
+            const response = await fetch(sheetURL);
+            const text = await response.text();
+            const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+            const data = JSON.parse(jsonText);
+            
+            if (!data.table || !data.table.rows || data.table.rows.length === 0) {
+                console.warn(`Sheet ${sheetName} is empty or invalid`);
+                continue;
+            }
+            
+            const table = data.table;
+            const headers = (table.cols || []).map(col => String((col && col.label != null) ? col.label : ''));
+            console.log(`Headers found in ${sheetName}:`, headers);
+            
+            const headerMap = {
+                category: headers.findIndex(h => h.toLowerCase().includes('category')),
+                description: headers.findIndex(h => h.toLowerCase().includes('description')),
+                imageUrl: headers.findIndex(h => h.toLowerCase().includes('image'))
+            };
+            
+            console.log(`Header mapping for ${sheetName}:`, headerMap);
+            
+            const meta = {};
+            for (let i = 0; i < table.rows.length; i++) {
+                const row = table.rows[i].c;
+                if (!row) continue;
+                
+                const name = headerMap.category >= 0 ? String(row[headerMap.category] && row[headerMap.category].v != null ? row[headerMap.category].v : '').trim() : '';
+                if (!name) continue;
+                
+                const description = headerMap.description >= 0 ? String(row[headerMap.description] && row[headerMap.description].v != null ? row[headerMap.description].v : '').trim() : '';
+                const imageUrl = headerMap.imageUrl >= 0 ? String(row[headerMap.imageUrl] && row[headerMap.imageUrl].v != null ? row[headerMap.imageUrl].v : '').trim() : '';
+                
+                const key = normalizeName(name);
+                meta[key] = { description, image: imageUrl };
+                console.log(`Categories meta entry: ${name} (${key}) -> image: ${imageUrl}`);
+            }
+            
+            console.log(`Successfully loaded Categories metadata from ${sheetName}:`, meta);
+            try { window.categoriesMeta = meta; } catch (_) {}
+            return meta;
+            
+        } catch (error) {
+            console.warn(`Failed to load Categories sheet ${sheetName}:`, error);
+            continue;
+        }
     }
-    try { window.categoriesMeta = meta; } catch (_) {}
-    return meta;
+    
+    console.warn('No Categories sheet found, using empty metadata');
+    const emptyMeta = {};
+    try { window.categoriesMeta = emptyMeta; } catch (_) {}
+    return emptyMeta;
 }
 
 async function finalizeProductsLoad() {
