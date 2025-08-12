@@ -13,6 +13,15 @@ if (typeof config !== 'undefined') {
 
 // Initialize product data structure
 let productData = {};
+// Local fallback images for known categories (used only if sheet doesn't supply one)
+const localImageMap = {
+    'fresh microgreens': 'assets/images/categories/Microgreens.jpeg',
+    'microgreens': 'assets/images/categories/Microgreens.jpeg',
+    'hydroponic greens': 'assets/images/categories/Microgreens.jpeg',
+    'fresh herbs': 'assets/images/categories/Microgreens.jpeg',
+    'weekly box': 'assets/images/categories/Microgreens.jpeg',
+    'weekly basket': 'assets/images/categories/Microgreens.jpeg'
+};
 
 // Fetch product data from Google Sheet
 async function fetchProductData() {
