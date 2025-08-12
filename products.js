@@ -316,6 +316,7 @@ async function fetchCategoriesMeta() {
         const imageUrl = headerMap.imageUrl >= 0 ? String(row[headerMap.imageUrl] && row[headerMap.imageUrl].v != null ? row[headerMap.imageUrl].v : '').trim() : '';
         meta[normalizeName(name)] = { description, image: imageUrl };
     }
+    try { window.categoriesMeta = meta; } catch (_) {}
     return meta;
 }
 
@@ -356,6 +357,7 @@ async function finalizeProductsLoad() {
             }
         }
     }
+    try { window.productData = productData; } catch (_) {}
     populateProductCategories();
     setupProductCategoryEvents();
 }
