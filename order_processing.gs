@@ -398,11 +398,32 @@ function updateOrderStatus(orderId, status) {
 }
 
 /**
+ * Handle CORS preflight requests
+ */
+function doOptions(e) {
+  return ContentService
+    .createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400'
+    });
+}
+
+/**
  * Web app endpoint to receive WhatsApp webhook notifications
  */
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    // Handle both application/json and text/plain content types
+    let data;
+    if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      throw new Error('No post data received');
+    }
     
     // Process based on notification type
     if (data.type === "new_order") {
@@ -410,7 +431,13 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
         orderId: orderId
-      })).setMimeType(ContentService.MimeType.JSON);
+      }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
     } 
     else if (data.type === "payment_confirmation") {
       const paymentInfo = parsePaymentMessage(data.message);
@@ -423,19 +450,37 @@ function doPost(e) {
         );
         return ContentService.createTextOutput(JSON.stringify({
           success: success
-        })).setMimeType(ContentService.MimeType.JSON);
+        }))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        });
       }
     }
     
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: "Unknown request type"
-    })).setMimeType(ContentService.MimeType.JSON);
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
   }
 }
 
@@ -457,7 +502,12 @@ function doGet(e) {
         } catch (_) { items = []; }
         const orderId = processNewOrder(customerId, items, totalAmount);
         return ContentService.createTextOutput(JSON.stringify({ success: true, orderId: orderId }))
-          .setMimeType(ContentService.MimeType.JSON);
+          .setMimeType(ContentService.MimeType.JSON)
+          .setHeaders({
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+          });
       } else if (type === 'payment_confirmation') {
         const orderId = String(e.parameter.orderId || '');
         const customerId = String(e.parameter.customerId || '');
@@ -471,35 +521,64 @@ function doGet(e) {
         } catch (_) {}
         const ok = processPayment(orderId, customerId, amount, method);
         return ContentService.createTextOutput(JSON.stringify({ success: ok }))
-          .setMimeType(ContentService.MimeType.JSON);
+          .setMimeType(ContentService.MimeType.JSON)
+          .setHeaders({
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+          });
       }
     }
 
     if (e.parameter.action === "dashboard") {
       const dashboardData = getDashboardData();
-      return ContentService.createTextOutput(JSON.stringify({
-        success: true,
-        data: dashboardData
-      })).setMimeType(ContentService.MimeType.JSON);
+          return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      data: dashboardData
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
     } else if (e.parameter.action === "config") {
       const cfg = getConfigValues();
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
         config: cfg
-      })).setMimeType(ContentService.MimeType.JSON);
+      }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
     } else if (e.parameter.action === "next_delivery_date") {
       const nextDate = getNextDeliveryDate();
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
         nextDeliveryDate: nextDate
-      })).setMimeType(ContentService.MimeType.JSON);
+      }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
     } else if (e.parameter.action === "orders_by_phone") {
       const phone = (e.parameter.phone || '').trim();
       if (!phone) {
         return ContentService.createTextOutput(JSON.stringify({
           success: false,
           error: "Missing phone"
-        })).setMimeType(ContentService.MimeType.JSON);
+        }))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        });
       }
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const ordersSheet = ss.getSheetByName(ORDERS_SHEET_NAME);
@@ -523,18 +602,36 @@ function doGet(e) {
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
         orders: orders
-      })).setMimeType(ContentService.MimeType.JSON);
+      }))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
     }
     
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: "Unknown action"
-    })).setMimeType(ContentService.MimeType.JSON);
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
   }
 }
 
