@@ -21,7 +21,7 @@ const config = {
     
     // Google Apps Script Web App URL
     // After deploying your Google Apps Script, paste the web app URL here
-    GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw3VAffVhyopDMowV_ozwk_YWM6-pjSihaSnNuWELFpIoJ0pss1ZVdT-Y8udV-9N8ixwg/exec',
+    GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzM2lU8VFf3cdtDmwExQh9-34WJePecirWEwcsOFQWZE8dpcWCCXyahWOTnF5ZMEI7SzQ/exec',
     
     // Delivery Configuration
     DELIVERY_DAYS: ['Tuesday', 'Friday'],
