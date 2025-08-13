@@ -1802,19 +1802,12 @@
                             // Send WhatsApp notification via MCP server
                             try {
                                 console.log('[WhatsApp] Sending notification via MCP server...');
-                                const mcpResponse = await fetch(config.MCP_SERVER_URL + '/webhook/whatsapp', {
+                                const mcpResponse = await fetch(config.MCP_SERVER_URL + '/mcp/whatsapp/send_message', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
-                                        message: `New order placed! Order ID: ${result.orderId}`,
-                                        sender: config.WHATSAPP_NUMBER || 'website',
-                                        timestamp: new Date().toISOString(),
-                                        order_data: {
-                                            orderId: result.orderId,
-                                            items: cart,
-                                            totalAmount: totalAmount,
-                                            customerId: config.WHATSAPP_NUMBER || 'website'
-                                        }
+                                        recipient: config.WHATSAPP_NUMBER || 'website',
+                                        message: `🎉 New order confirmed!\n\nOrder ID: ${result.orderId}\nTotal: ₹${totalAmount}\n\nItems:\n${cart.map(item => `• ${item.name} (₹${item.price} x ${item.quantity})`).join('\n')}\n\nThank you for your order! We'll prepare it for delivery.`
                                     })
                                 });
                                 
