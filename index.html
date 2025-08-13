@@ -1761,13 +1761,32 @@
                     };
                     console.log('[Order Debug] Payload:', payload);
                     
-                    // Use text/plain to bypass CORS preflight
-                    const response = await fetch(scriptUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload),
-                        redirect: 'follow'
-                    });
+                    // Try text/plain to bypass CORS preflight, with GET fallback
+                    let response;
+                    try {
+                        console.log('[Order Debug] Attempting POST with text/plain...');
+                        response = await fetch(scriptUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify(payload),
+                            redirect: 'follow'
+                        });
+                    } catch (corsError) {
+                        console.log('[Order Debug] POST failed, trying GET fallback...', corsError.message);
+                        // Fallback: Use GET with URL parameters (Apps Script supports this)
+                        const params = new URLSearchParams({
+                            via: 'get_fallback',
+                            type: 'new_order',
+                            customerId: payload.customerId,
+                            items: JSON.stringify(payload.items),
+                            totalAmount: payload.totalAmount.toString(),
+                            timestamp: payload.timestamp
+                        });
+                        response = await fetch(`${scriptUrl}?${params}`, {
+                            method: 'GET',
+                            redirect: 'follow'
+                        });
+                    }
                     
                     console.log('[Order Debug] Response status:', response.status);
                     console.log('[Order Debug] Response ok:', response.ok);
