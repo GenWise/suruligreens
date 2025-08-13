@@ -399,15 +399,13 @@ function updateOrderStatus(orderId, status) {
 
 /**
  * Handle CORS preflight requests
+ * Note: Google Apps Script ContentService cannot set custom headers
+ * We'll use JSONP for GET requests to bypass CORS entirely
  */
 function doOptions(e) {
-  return ContentService
-    .createTextOutput('')
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    .setHeader('Access-Control-Max-Age', '86400');
+  // Since we can't set CORS headers, return empty response
+  // CORS will be bypassed using JSONP for GET requests
+  return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT);
 }
 
 /**
@@ -431,9 +429,7 @@ function doPost(e) {
         orderId: orderId
       }))
       .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
     } 
     else if (data.type === "payment_confirmation") {
       const paymentInfo = parsePaymentMessage(data.message);
@@ -448,9 +444,7 @@ function doPost(e) {
           success: success
         }))
         .setMimeType(ContentService.MimeType.JSON)
-        .setHeader('Access-Control-Allow-Origin', '*')
-        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
       }
     }
     
@@ -459,18 +453,14 @@ function doPost(e) {
       error: "Unknown request type"
     }))
     .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: error.toString()
     }))
     .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
   }
 }
 
@@ -493,9 +483,7 @@ function doGet(e) {
         const orderId = processNewOrder(customerId, items, totalAmount);
         return ContentService.createTextOutput(JSON.stringify({ success: true, orderId: orderId }))
           .setMimeType(ContentService.MimeType.JSON)
-          .setHeader('Access-Control-Allow-Origin', '*')
-          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
       } else if (type === 'payment_confirmation') {
         const orderId = String(e.parameter.orderId || '');
         const customerId = String(e.parameter.customerId || '');
@@ -510,32 +498,34 @@ function doGet(e) {
         const ok = processPayment(orderId, customerId, amount, method);
         return ContentService.createTextOutput(JSON.stringify({ success: ok }))
           .setMimeType(ContentService.MimeType.JSON)
-          .setHeader('Access-Control-Allow-Origin', '*')
-          .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-          .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
       }
     }
 
     if (e.parameter.action === "dashboard") {
       const dashboardData = getDashboardData();
-          return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      data: dashboardData
-    }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      const response = { success: true, data: dashboardData };
+      
+      // Support JSONP to bypass CORS
+      if (e.parameter.callback) {
+        const jsonp = e.parameter.callback + '(' + JSON.stringify(response) + ')';
+        return ContentService.createTextOutput(jsonp).setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify(response))
+        .setMimeType(ContentService.MimeType.JSON);
     } else if (e.parameter.action === "config") {
       const cfg = getConfigValues();
-      return ContentService.createTextOutput(JSON.stringify({
-        success: true,
-        config: cfg
-      }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      const response = { success: true, config: cfg };
+      
+      // Support JSONP to bypass CORS
+      if (e.parameter.callback) {
+        const jsonp = e.parameter.callback + '(' + JSON.stringify(response) + ')';
+        return ContentService.createTextOutput(jsonp).setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify(response))
+        .setMimeType(ContentService.MimeType.JSON);
     } else if (e.parameter.action === "next_delivery_date") {
       const nextDate = getNextDeliveryDate();
       return ContentService.createTextOutput(JSON.stringify({
@@ -543,9 +533,7 @@ function doGet(e) {
         nextDeliveryDate: nextDate
       }))
       .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
     } else if (e.parameter.action === "orders_by_phone") {
       const phone = (e.parameter.phone || '').trim();
       if (!phone) {
@@ -554,9 +542,7 @@ function doGet(e) {
           error: "Missing phone"
         }))
         .setMimeType(ContentService.MimeType.JSON)
-        .setHeader('Access-Control-Allow-Origin', '*')
-        .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
       }
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const ordersSheet = ss.getSheetByName(ORDERS_SHEET_NAME);
@@ -582,9 +568,7 @@ function doGet(e) {
         orders: orders
       }))
       .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*')
-      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-      .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
     }
     
     return ContentService.createTextOutput(JSON.stringify({
@@ -592,18 +576,14 @@ function doGet(e) {
       error: "Unknown action"
     }))
     .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
       error: error.toString()
     }))
     .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
+;
   }
 }
 
