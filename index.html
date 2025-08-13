@@ -1798,6 +1798,34 @@
                             orderSaved = true;
                             console.log('[Order] Successfully saved to Google Sheets:', result.orderId);
                             alert('✅ Order saved successfully! Order ID: ' + result.orderId);
+                            
+                            // Send WhatsApp notification via MCP server
+                            try {
+                                console.log('[WhatsApp] Sending notification via MCP server...');
+                                const mcpResponse = await fetch(config.MCP_SERVER_URL + '/webhook/whatsapp', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        message: `New order placed! Order ID: ${result.orderId}`,
+                                        sender: config.WHATSAPP_NUMBER || 'website',
+                                        timestamp: new Date().toISOString(),
+                                        order_data: {
+                                            orderId: result.orderId,
+                                            items: cart,
+                                            totalAmount: totalAmount,
+                                            customerId: config.WHATSAPP_NUMBER || 'website'
+                                        }
+                                    })
+                                });
+                                
+                                if (mcpResponse.ok) {
+                                    console.log('[WhatsApp] Notification sent successfully');
+                                } else {
+                                    console.warn('[WhatsApp] Failed to send notification:', mcpResponse.status);
+                                }
+                            } catch (mcpError) {
+                                console.warn('[WhatsApp] MCP server unavailable:', mcpError.message);
+                            }
                         } else {
                             console.error('[Order] Failed to save to Google Sheets:', result.error);
                             alert('❌ Failed to save order: ' + result.error);
