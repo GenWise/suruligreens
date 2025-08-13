@@ -14,7 +14,7 @@ const config = {
     SITE_URL: 'https://genwise.github.io/suruligreens/',
     
     // WhatsApp MCP Server Configuration
-    MCP_SERVER_URL: 'http://165.232.134.106:3000', // URL of your WhatsApp MCP server on DigitalOcean
+    MCP_SERVER_URL: 'https://college-cheapest-saint-joint.trycloudflare.com', // HTTPS URL via Cloudflare Tunnel
     
     // Payment Configuration
     WHATSAPP_QR_URL: 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=upi://pay?pa=YOUR_UPI_ID@ybl&pn=Suruli%20Greens&am={{amount}}&cu=INR&tn=Order%20{{orderId}}',
