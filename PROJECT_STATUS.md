@@ -54,34 +54,35 @@ Customer Website → Google Apps Script → Google Sheets (Order Storage)
 ## ❌ CURRENT LIMITATIONS
 
 ### Customer Experience Gaps:
-1. **No customer phone collection** - customers can't receive confirmations
-2. **No customer WhatsApp confirmations** - only business gets notified
-3. **Website-only ordering** - no direct WhatsApp ordering capability
+1. **No customer phone collection** on website - website customers can't receive confirmations
+2. **No customer WhatsApp confirmations** - only business gets notified (customers do see their own sent messages in their WhatsApp)
+3. **Dual ordering system not connected** - website and WhatsApp orders processed separately
 
 ### WhatsApp Integration Gaps:
 1. **No incoming message processing** - WhatsApp MCP receives but doesn't process orders
-2. **No automated replies** to customers who message directly
+2. **No automated replies to ANYBODY** - no confirmations sent back to customers
 3. **No order parsing** from WhatsApp messages
 
 ## 📋 PENDING IMPLEMENTATION
 
-### Phase 1: Customer Confirmation System
-**Goal**: Customers get WhatsApp confirmations for website orders
+### Phase 1: WhatsApp Order Processing & Auto-Replies
+**Goal**: Process incoming WhatsApp orders and send automatic confirmations back to customers
 
-#### Option A: Customer Phone Collection (Recommended)
-- Add phone number field to checkout
-- Include customer phone in order notification
-- Send confirmation to customer's WhatsApp
+#### Primary Focus: WhatsApp Message Processing
+- Parse incoming WhatsApp orders (like from 919941787854)
+- Extract order details: items, quantities, totals
+- Send automatic confirmation replies to customers
+- Save WhatsApp orders to Google Sheets
 
-#### Option B: Email Confirmations
-- Collect email during checkout
-- Send email confirmations
-- Traditional e-commerce approach
+#### Secondary: Website Customer Confirmations
+- **Optional**: Add phone collection for website customers
+- **Current**: Website orders only notify business (working as intended)
+- **Future**: Website customers could also get WhatsApp confirmations
 
-### Phase 2: WhatsApp Order Processing
-**Goal**: Process orders received via WhatsApp messages
+### Phase 2: Advanced WhatsApp Features
+**Goal**: Enhanced WhatsApp ordering experience
 
-#### Current WhatsApp Orders (Example received):
+#### Enhanced WhatsApp Capabilities:
 ```
 [2025-08-13 08:28:46] ← 919941787854: Hi Suruli Greens! I'd like to place an order for:
 2x Sunflower - ₹280
@@ -142,14 +143,16 @@ Please confirm my order. Thanks!
 ## 🎯 RECOMMENDED NEXT STEPS
 
 ### Immediate (Phase 1):
-1. **Add customer phone collection** to website checkout
-2. **Update order notification format** to include customer phone
-3. **Enable customer WhatsApp confirmations**
+1. **Add WhatsApp message parsing** to detect incoming orders
+2. **Implement automatic replies** to customers who send orders
+3. **Save WhatsApp orders** to Google Sheets
+4. **Test with new customer orders** (can use wife's phone for testing)
 
 ### Short-term (Phase 2):
-1. **Add WhatsApp message parsing** to detect orders
-2. **Implement auto-replies** for WhatsApp orders
-3. **Unified order processing** (website + WhatsApp)
+1. **Enhanced order parsing** for complex messages
+2. **Product catalog integration** with WhatsApp
+3. **Order status updates** and delivery notifications
+4. **Payment link integration** (UPI/payment gateway)
 
 ### Long-term (Phase 3):
 1. **WhatsApp business catalog** setup
